@@ -1,5 +1,5 @@
 {
-  "name": "student-management",
+  "name": "student_management_system",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,10 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "axios": "^0.21.0",
     "core-js": "^3.6.5",
+    "element-ui": "^2.14.1",
+    "stompjs": "^2.3.3",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
