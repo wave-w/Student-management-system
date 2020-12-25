@@ -1,0 +1,23 @@
+*{
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+.el-input--prefix .el-input__inner{
+   padding-left: 35px !important;
+}
+a{
+    color: #000;
+    text-decoration: none;
+}
+/* 谷歌 */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+   -webkit-appearance: none;
+   appearance: none;
+   margin: 0;
+}
+/* 火狐 */
+input[type="number"]{
+   -moz-appearance:textfield;
+}
