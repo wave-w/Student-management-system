@@ -6,7 +6,7 @@ export function request(config) {
         baseURL: 'http://111.75.252.147:8099',
      // baseURL:'http://119.23.53.78:8888/api/private/v1',
         withCredentials:true,
-        timeout: 5000
+        timeout: 10000
     }) 
     // intance.defaults.
     intance.interceptors.request.use(
@@ -28,8 +28,8 @@ export function request(config) {
             return response.data
         },
         error=>{
-            Router.push('/login')
-            Message.error("出错啦！！！请重新登录")
+            // Router.push('/login')
+            Message.error("出错啦！！！请刷新页面")
             console.log(error);
         })
         return intance(config)

@@ -10,7 +10,7 @@ export function getdorm(college) {
         }
     })
 }
-export function findbytime(college,check_time,state,isread) {
+export function findbytime(college,check_time,state,isread,currentPage,pageSize) {
     return request({
         url: '/findBytime',
         method: 'POST',
@@ -18,7 +18,9 @@ export function findbytime(college,check_time,state,isread) {
             college,
             check_time,
             state,
-            isread
+            isread,
+            currentPage,
+            pageSize
         }
     })
 }

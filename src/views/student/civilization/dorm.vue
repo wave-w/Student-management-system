@@ -10,7 +10,7 @@
           <el-option label="合格" value="qualified"></el-option>
           <el-option label="不合格" value="unqualified"></el-option>
         </el-select>
-        <el-table :data="sDromData" border class="dromtab" stripe height="450">
+        <el-table :data="sDromData" border class="dromtab" stripe height="400">
           <el-table-column prop="dormNum" label="寝室号" align='center'>
           </el-table-column>
           <el-table-column prop="checkTime" label="查寝时间" align='center'>
@@ -35,6 +35,11 @@
             </template>
           </el-table-column>
         </el-table>
+         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+           :current-page="currentPage" :page-sizes="pagesizes" :page-size="pagesize"
+           layout="total, sizes, prev, pager, next, jumper" :total="total"
+            style="margin-left: 280px; margin-top: 20px;">
+         </el-pagination>
       </el-card>
     </div>
     <el-dialog title="寝室详情" :visible="dialogVisible" width="30%" :show-close='false'>
@@ -72,7 +77,7 @@
       </div>
       <span slot="footer">
         <el-button @click="qualifiedVisible = false">取 消</el-button>
-        <el-button type="primary" @click="sendqualified">确 定</el-button>
+        <el-button type="primary" @click="sendqualified" :disabled='isdisablebtn'>{{showbotton}}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -131,7 +136,13 @@
               trigger: 'blur'
             }
           ],
-        }
+        },
+        showbotton:'确定',
+        isdisablebtn:false,
+        currentPage:1,
+        pagesize:0,
+        total:0,
+        pagesizes:[0,6,10,20,30,40,50]
       }
     },
     created() {
@@ -151,6 +162,9 @@
       let sid = window.sessionStorage.getItem('sid')
       getsdorm(sid).then(res => {
         if (res.code == 200) {
+          this.total = res.data2.length
+          this.pagesize = res.data2.length
+          this.pagesizes[0] =this.pagesize
           // this.sDromData = res.data2
           res.data2.forEach(item => {
             this.sDromData.push(item)
@@ -164,8 +178,10 @@
     },
     methods: {
       timechange() {
-        checkdorm(this.dormid, this.value, this.isqualified.value).then(res => {
-          this.sDromData = res
+        checkdorm(this.dormid, this.value, this.isqualified.value
+        ,this.currentPage,this.pagesize).then(res => {
+          this.sDromData = res.data2
+          this.total = res.data
         })
       },
       details(index, row) {
@@ -195,13 +211,20 @@
       sendqualified() {
         this.$refs.textref.validate(valid => {
           if (valid) {
-            this.dialogVisible = false;
-            this.qualifiedVisible = false;
             this.$refs.imgupload.submit();
             this.Dormrow.feedbackDescribe = this.textareaForm.qualifiedtext
+            this.uploadfeeback()
+          } else this.$message.error("请输入符合的反馈描述")
+        }) 
+      },
+       uploadfeeback(){
+            this.showbotton = '反馈中...'
+            this.isdisablebtn = true
             setTimeout(() => {
-              console.log(this.Picturepath);
-              this.Dormrow.feedbackPicture = this.Picturepath.join(',')
+              // console.log(this.Picturepath);
+            this.dialogVisible = false;
+            this.qualifiedVisible = false;
+            this.Dormrow.feedbackPicture = this.Picturepath.join(',')
               feedteacher(this.Dormrow.checkTime, this.Dormrow.dormNum, this.Dormrow.feedbackDescribe,
                   this.Dormrow.feedbackPicture, this.Dormrow.id, this.Dormrow.readIt, this.Dormrow.state,
                   this.Dormrow.stuReadIt, this.Dormrow.unqualifiedDescribe, this.Dormrow.unqualifiedPicture)
@@ -223,14 +246,12 @@
                 })
                  let colla = window.sessionStorage.getItem('collegeAbbreviation')
                  client.send(`dorm${colla}`,{},1)
+                  this.isdisablebtn = false
+                  this.showbotton = '确定'
                  }, 5000);
-          } else this.$message.error("请输入反馈描述")
-        }) 
-         
-      },
+         },
       handleSuccess(response) {
         this.Picturepath.push(response.data)
-        // console.log(response.data);
       },
       handlePictureCardPreview(file) {
         this.dialogImageUrl = file.url;
@@ -242,7 +263,14 @@
       handleError(err, file) {
         this.$message.error("图片上传失败,请重新登录后重试！")
       },
-
+      handleSizeChange(size){
+        this.pagesize = size
+          this.timechange()
+      },
+      handleCurrentChange(page){
+        this.currentPage = page
+         this.timechange()
+      }
     },
   }
 </script>

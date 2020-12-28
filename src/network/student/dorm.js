@@ -8,12 +8,12 @@ export function getsdorm(stunum){
         }
     })
 }
-export function checkdorm(dormNum,check_time,state){
+export function checkdorm(dormNum,check_time,state,currentPage,pageSize){
     return request({
         url:'/findDorm',
         method:'POST',
         params:{
-            dormNum,check_time,state
+            dormNum,check_time,state,currentPage,pageSize
         }
     })
 }

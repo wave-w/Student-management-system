@@ -19,7 +19,7 @@
         </el-link>
         <el-button type="success" plain @click="showtabup" style="margin-left: 30px;margin-top: -5px;">上传表格</el-button>
         <!-- 主表格渲染 -->
-        <el-table :data="DromData" border stripe height="450">
+        <el-table :data="DromData" border stripe height="400">
           <el-table-column prop="dormNum" label="寝室号" align='center'>
           </el-table-column>
           <el-table-column prop="checkTime" label="查寝时间" align='center'>
@@ -46,6 +46,11 @@
             </template>
           </el-table-column>
         </el-table>
+         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+           :current-page="currentPage" :page-sizes="pagesizes" :page-size="pagesize"
+           layout="total, sizes, prev, pager, next, jumper" :total="total"
+           style="margin-left: 280px; margin-top: 20px;">
+         </el-pagination>
       </el-card>
     </div>
     <!-- 显示寝室详情 -->
@@ -144,7 +149,12 @@
         // 展示表格样式图片
         url: require('@/assets/images/tablestyle.png'),
         srcList: [require('@/assets/images/tablestyle.png'), ],
-        feedbackdorm:''
+        feedbackdorm:'',
+        // 改变页码
+        currentPage:1,
+        pagesize:0,
+        total:0,
+        pagesizes:[0,6,10,20,30,40,50]
       }
     },
   created() {
@@ -163,7 +173,11 @@
     mounted() {
       getdorm(this.college).then(res => {
         if (res.code == 200) {
+          this.total = res.data2.length
+          this.pagesize = res.data2.length
+          this.pagesizes[0] =this.pagesize
           this.datatime = res.data
+          // console.log(res);
           // this.DromData = res.data2
           res.data2.forEach(item => {
             this.DromData.push(item)
@@ -175,8 +189,11 @@
     },
     methods: {
       timechange() {
-        findbytime(this.college, this.value, this.isqualified.value, this.isread.value).then(res => {
-          this.DromData = res
+        findbytime(this.college, this.value, this.isqualified.value,
+         this.isread.value,this.currentPage,this.pagesize).then(res => {
+          this.DromData = res.data2
+          this.total = res.data
+          // console.log(res);
         })
       },
       details(index, row) {
@@ -265,6 +282,14 @@
       showtabup() {
         this.tabledialogVisible = true
       },
+      handleSizeChange(size){
+        this.pagesize = size
+          this.timechange()
+      },
+      handleCurrentChange(page){
+        this.currentPage = page
+         this.timechange()
+      }
     },
   }
 </script>
