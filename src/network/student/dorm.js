@@ -46,3 +46,13 @@ export function changesread(checkTime,dormNum,feedbackDescribe,
     })
 }
 
+export function uploadimg(file){
+    return request({
+        url:'/tupian',
+        method:'POST',
+        data:{
+           file
+        }
+    })
+}
+

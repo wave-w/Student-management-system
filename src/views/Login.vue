@@ -77,8 +77,8 @@
                          let mobile = this.LoginForm.username
                          let password = this.LoginForm.password
                         Login(mobile,password,this.rememberme).then(res=>{
-                              console.log(res.data.JSESSION);
-                              window.sessionStorage.setItem('session',res.data.JSESSION)
+                            //   console.log(res.data.JSESSION);
+                            //   window.sessionStorage.setItem('session',res.data.JSESSION)
                             //   document.cookie = `JSESSIONID=${res.data.JSESSION}`
                         if(res.code==200){
                          if(res.data.role == 'ROLE_headmaster'){

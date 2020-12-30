@@ -57,6 +57,9 @@
       </span>
     </el-dialog>
     <el-dialog title="不合格反馈" :visible="qualifiedVisible" width="50%" :show-close='false' :destroy-on-close='true'>
+         <el-alert title="警告" type="warning" description="正在发送反馈消息中.... ，请勿关闭页面" 
+       show-icon  :closable='false' center v-if="isalert"
+       style="position: fixed;top:20px; left: 300px; z-index: 99; width: 1000px;"></el-alert>
       <!-- 详细信息输入 -->
       <el-form :model="textareaForm" :rules="rules" ref="textref">
         <el-form-item prop="qualifiedtext">
@@ -76,7 +79,7 @@
         </el-dialog>
       </div>
       <span slot="footer">
-        <el-button @click="qualifiedVisible = false">取 消</el-button>
+        <el-button @click="qualifiedVisible = false" :disabled='isquxiao'>取 消</el-button>
         <el-button type="primary" @click="sendqualified" :disabled='isdisablebtn'>{{showbotton}}</el-button>
       </span>
     </el-dialog>
@@ -92,7 +95,8 @@
     getsdorm,
     checkdorm,
     feedteacher,
-    changesread
+    changesread,
+    uploadimg
   } from '@/network/student/dorm';
   export default {
     name: '',
@@ -139,10 +143,12 @@
         },
         showbotton:'确定',
         isdisablebtn:false,
+        isquxiao:false,
         currentPage:1,
         pagesize:0,
         total:0,
-        pagesizes:[0,6,10,20,30,40,50]
+        pagesizes:[0,6,10,20,30,40,50],
+        isalert:false
       }
     },
     created() {
@@ -211,6 +217,7 @@
       sendqualified() {
         this.$refs.textref.validate(valid => {
           if (valid) {
+            this.isalert = true
             this.$refs.imgupload.submit();
             this.Dormrow.feedbackDescribe = this.textareaForm.qualifiedtext
             this.uploadfeeback()
@@ -220,8 +227,9 @@
        uploadfeeback(){
             this.showbotton = '反馈中...'
             this.isdisablebtn = true
+            this.isquxiao = true
             setTimeout(() => {
-              // console.log(this.Picturepath);
+            // console.log(this.Picturepath);
             this.dialogVisible = false;
             this.qualifiedVisible = false;
             this.Dormrow.feedbackPicture = this.Picturepath.join(',')
@@ -247,11 +255,14 @@
                  let colla = window.sessionStorage.getItem('collegeAbbreviation')
                  client.send(`dorm${colla}`,{},1)
                   this.isdisablebtn = false
+                  this.isquxiao = false
+                   this.isalert = false
                   this.showbotton = '确定'
-                 }, 5000);
+                 }, 8000);
          },
       handleSuccess(response) {
         this.Picturepath.push(response.data)
+        // console.log(response);
       },
       handlePictureCardPreview(file) {
         this.dialogImageUrl = file.url;
@@ -270,7 +281,7 @@
       handleCurrentChange(page){
         this.currentPage = page
          this.timechange()
-      }
+      },
     },
   }
 </script>
