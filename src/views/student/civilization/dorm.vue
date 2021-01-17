@@ -10,10 +10,11 @@
           <el-option label="合格" value="qualified"></el-option>
           <el-option label="不合格" value="unqualified"></el-option>
         </el-select>
-        <el-table :data="sDromData" border class="dromtab" stripe height="400">
+        <el-table :data="sDromData" border class="dromtab" stripe height="400"
+          :default-sort="{prop: 'checkTime', order: 'descending'}">
           <el-table-column prop="dormNum" label="寝室号" align='center'>
           </el-table-column>
-          <el-table-column prop="checkTime" label="查寝时间" align='center'>
+          <el-table-column prop="checkTime" label="查寝时间" align='center' sortable>
           </el-table-column>
           <el-table-column prop="state" label="状态" align='center'>
             <template slot-scope="scope">
@@ -24,42 +25,41 @@
             <template slot-scope="scope">
               <el-button type="primary" size='small' @click='details(scope.$index,scope.row)'>
                 查看 <el-badge :is-dot="(scope.row.stuReadIt=='unread')?t:f" :hidden='ishad[scope.$index]'
-                  style="position: absolute;top:10px"></el-badge>
+                  style="position: absolute;top:.625rem"></el-badge>
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column prop="feedbackReadIt" label="反馈情况" align='center'>
+          <el-table-column prop="fdyFeedbackReadIt" label="反馈情况" align='center'>
             <template slot-scope="scope">
-              <el-tag :type="(scope.row.feedbackReadIt=='read')?s:d">
-                {{(scope.row.feedbackReadIt=='unread')?'未读':'已读'}}</el-tag>
+              <el-tag :type="(scope.row.fdyFeedbackReadIt=='read' )?s:d">
+                {{(scope.row.fdyFeedbackReadIt=='unread' )?'老师未读':'老师已读'}}</el-tag>
             </template>
           </el-table-column>
         </el-table>
-         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-           :current-page="currentPage" :page-sizes="pagesizes" :page-size="pagesize"
-           layout="total, sizes, prev, pager, next, jumper" :total="total"
-            style="margin-left: 280px; margin-top: 20px;">
-         </el-pagination>
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="currentPage"
+          :page-sizes="pagesizes" :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total"
+          style="margin-left: 17.5rem; margin-top: 1.25rem;">
+        </el-pagination>
       </el-card>
     </div>
     <el-dialog title="寝室详情" :visible="dialogVisible" width="30%" :show-close='false'>
       <el-input type="textarea" autosize placeholder="暂无信息" v-model="dormtext" disabled></el-input>
       <div class="dorming" v-for="(item,index) in srcList" :key="index">
-        <el-image style="width: 120px; height: 120px" :src="item" :preview-src-list="srcList">
-          <div slot="placeholder" class="image-slot">
+        <el-image style="width: 7.5rem; height: 7.5rem" :src="item" :preview-src-list="srcList">
+          <div slot="placeholder">
             加载中<span class="dot">...</span>
           </div>
         </el-image>
       </div>
       <span slot="footer">
         <el-button @click="dialogVisible = false">确认</el-button>
-        <el-button type="primary" @click="dialogVisible = false;qualifiedVisible = true">反馈</el-button>
+        <el-button type="primary" @click="dialogVisible = false;qualifiedVisible = true" :disabled='isovertime'>
+          {{overtime}}</el-button>
       </span>
     </el-dialog>
     <el-dialog title="不合格反馈" :visible="qualifiedVisible" width="50%" :show-close='false' :destroy-on-close='true'>
-         <el-alert title="警告" type="warning" description="正在发送反馈消息中.... ，请勿关闭页面" 
-       show-icon  :closable='false' center v-if="isalert"
-       style="position: fixed;top:20px; left: 300px; z-index: 99; width: 1000px;"></el-alert>
+      <el-alert title="警告" type="warning" description="正在发送反馈消息中.... ，请勿关闭页面" show-icon :closable='false' center
+        v-if="isalert" style="position: fixed;top:1.25rem; left: 18.75rem; z-index: 99; width: 62.5rem;"></el-alert>
       <!-- 详细信息输入 -->
       <el-form :model="textareaForm" :rules="rules" ref="textref">
         <el-form-item prop="qualifiedtext">
@@ -69,8 +69,8 @@
       </el-form>
       <!-- 图片上传 -->
       <div class="imgupload">
-        <el-upload action="http://111.75.252.147:8099/tupian" list-type="picture-card" ref="imgupload"
-          :on-success='handleSuccess' :on-preview="handlePictureCardPreview" :auto-upload='false' multiple
+        <el-upload action="http://111.75.252.147/score/tupian" list-type="picture-card" ref="imgupload"
+          :on-success='handleSuccess' :on-preview="handlePictureCardPreview"  multiple
           :with-credentials='true' :limit="3" :on-exceed="handleExceed" class="uploadstyle" :on-error='handleError'>
           <i class="el-icon-plus"></i>
         </el-upload>
@@ -87,17 +87,8 @@
 </template>
 
 <script>
-  import {
-    client,
-    connect
-  } from "@/network/config/mqtt";
-  import {
-    getsdorm,
-    checkdorm,
-    feedteacher,
-    changesread,
-    uploadimg
-  } from '@/network/student/dorm';
+  import {client} from "@/network/config/mqtt";
+  import {getsdorm,checkdorm,feedteacher,changesread,uploadimg} from '@/network/student/dorm';
   export default {
     name: '',
     data() {
@@ -141,28 +132,20 @@
             }
           ],
         },
-        showbotton:'确定',
-        isdisablebtn:false,
-        isquxiao:false,
-        currentPage:1,
-        pagesize:0,
-        total:0,
-        pagesizes:[0,6,10,20,30,40,50],
-        isalert:false
+        showbotton: '确定',
+        isdisablebtn: false,
+        isquxiao: false,
+        currentPage: 1,
+        pagesize: 0,
+        total: 0,
+        pagesizes: [0, 6, 10, 20, 30, 40, 50],
+        isalert: false,
+        // 老师是否已读
+        // istread:false,
+        // istype:true,
+        isovertime: false,
+        overtime: '反馈'
       }
-    },
-    created() {
-      connect()
-     let sconntime = setInterval(() => {
-        if (!client.connected) {
-          this.$message.error('网络错误请刷新页面')
-        }
-      }, 2000);
-      setTimeout(() => {
-        if (client.connected) {
-          clearInterval(sconntime)
-        }
-      }, 10000);
     },
     mounted() {
       let sid = window.sessionStorage.getItem('sid')
@@ -170,7 +153,7 @@
         if (res.code == 200) {
           this.total = res.data2.length
           this.pagesize = res.data2.length
-          this.pagesizes[0] =this.pagesize
+          this.pagesizes[0] = this.pagesize
           // this.sDromData = res.data2
           res.data2.forEach(item => {
             this.sDromData.push(item)
@@ -184,15 +167,20 @@
     },
     methods: {
       timechange() {
-        checkdorm(this.dormid, this.value, this.isqualified.value
-        ,this.currentPage,this.pagesize).then(res => {
+        checkdorm(this.dormid, this.value, this.isqualified.value, this.currentPage, this.pagesize).then(res => {
           this.sDromData = res.data2
           this.total = res.data
         })
       },
       details(index, row) {
+        let feeddays = ((new Date(new Date().toLocaleDateString()).getTime()) -
+          (new Date(new Date(row.checkTime).toLocaleDateString()).getTime())) / 86400000; // 当天0点
+        if (feeddays >= 3) {
+          this.isovertime = true
+          this.overtime = '反馈期限已过'
+        }
         this.dormtext = row.qualifiedDescribe
-        if (row.qualifiedPicture == null) {
+        if (row.qualifiedPicture == '' || row.qualifiedPicture == null) {
           this.srcList = []
         } else {
           this.srcList = row.qualifiedPicture.split(',')
@@ -218,48 +206,52 @@
         this.$refs.textref.validate(valid => {
           if (valid) {
             this.isalert = true
-            this.$refs.imgupload.submit();
             this.Dormrow.feedbackDescribe = this.textareaForm.qualifiedtext
             this.uploadfeeback()
           } else this.$message.error("请输入符合的反馈描述")
-        }) 
+        })
       },
-       uploadfeeback(){
-            this.showbotton = '反馈中...'
-            this.isdisablebtn = true
-            this.isquxiao = true
-            setTimeout(() => {
-            // console.log(this.Picturepath);
-            this.dialogVisible = false;
-            this.qualifiedVisible = false;
-            this.Dormrow.feedbackPicture = this.Picturepath.join(',')
-              feedteacher(this.Dormrow.checkTime, this.Dormrow.dormNum, this.Dormrow.feedbackDescribe,
-                  this.Dormrow.feedbackPicture, this.Dormrow.id, this.Dormrow.readIt, this.Dormrow.state,
-                  this.Dormrow.stuReadIt, this.Dormrow.unqualifiedDescribe, this.Dormrow.unqualifiedPicture)
-                .then(res => {
-                  if (res.code === 200) {
-                    this.$message.success("反馈成功")
-                    this.Picturepath = []
-                  } else {
-                    this.$message.error("反馈失败,请重试")
-                  }
-                }),
-                changesread(this.Dormrow.checkTime, this.Dormrow.dormNum, this.Dormrow.feedbackDescribe,
-                  this.Dormrow.feedbackPicture, this.Dormrow.id, this.Dormrow.readIt, this.Dormrow.state,
-                  this.Dormrow.stuReadIt, this.Dormrow.unqualifiedDescribe, this.Dormrow.unqualifiedPicture)
-                .then(res => {
-                  if (res.code === 200) {
-                    this.Picturepath = []
-                  }
-                })
-                 let colla = window.sessionStorage.getItem('collegeAbbreviation')
-                 client.send(`dorm${colla}`,{},1)
-                  this.isdisablebtn = false
-                  this.isquxiao = false
-                   this.isalert = false
-                  this.showbotton = '确定'
-                 }, 8000);
-         },
+      uploadfeeback() {
+        this.showbotton = '反馈中...'
+        this.isdisablebtn = true
+        this.isquxiao = true
+        setTimeout(() => {
+          // console.log(this.Picturepath);
+          this.dialogVisible = false;
+          this.qualifiedVisible = false;
+          this.Dormrow.feedbackPicture = this.Picturepath.join(',')
+          feedteacher(this.Dormrow.checkTime, this.Dormrow.dormNum, this.Dormrow.feedbackDescribe,
+              this.Dormrow.feedbackPicture, this.Dormrow.id, this.Dormrow.readIt, this.Dormrow.state,
+              this.Dormrow.stuReadIt, this.Dormrow.unqualifiedDescribe, this.Dormrow.unqualifiedPicture)
+            .then(res => {
+              // console.log(res);
+              if (res.code === 200) {
+                this.$message.success("反馈成功")
+                this.Picturepath = []
+              } else {
+                this.$message.error("反馈失败,请重试")
+              }
+            }),
+            changesread(this.Dormrow.checkTime, this.Dormrow.dormNum, this.Dormrow.feedbackDescribe,
+              this.Dormrow.feedbackPicture, this.Dormrow.id, this.Dormrow.readIt, this.Dormrow.state,
+              this.Dormrow.stuReadIt, this.Dormrow.unqualifiedDescribe, this.Dormrow.unqualifiedPicture)
+            .then(res => {
+              if (res.code === 200) {
+                let colla = window.sessionStorage.getItem('collegeAbbreviation')
+                //  this.istread = true
+                //  this.istype = false
+                client.send(`feed${colla}`, {}, 1)
+                //  console.log("send");
+                this.Picturepath = []
+              }
+            })
+
+          this.isdisablebtn = false
+          this.isquxiao = false
+          this.isalert = false
+          this.showbotton = '确定'
+        }, 5000);
+      },
       handleSuccess(response) {
         this.Picturepath.push(response.data)
         // console.log(response);
@@ -274,13 +266,13 @@
       handleError(err, file) {
         this.$message.error("图片上传失败,请重新登录后重试！")
       },
-      handleSizeChange(size){
+      handleSizeChange(size) {
         this.pagesize = size
-          this.timechange()
+        this.timechange()
       },
-      handleCurrentChange(page){
+      handleCurrentChange(page) {
         this.currentPage = page
-         this.timechange()
+        this.timechange()
       },
     },
   }
@@ -288,33 +280,33 @@
 
 <style scoped>
   .el-select {
-    margin-left: 50px;
-    margin-bottom: 30px;
+    margin-left: 3.125rem;
+    margin-bottom: 1.875rem;
   }
 
   .box-card {
     position: relative;
     top: 0;
-    left: -40px;
+    left: -2.5rem;
   }
 
   .imgupload {
-    margin-top: 30px;
-    width: 725px;
-    height: 200px;
+    margin-top: 1.875rem;
+    width: 45.3125rem;
+    height: 12.5rem;
     border: solid 1px;
   }
 
   .dorming {
     display: inline-block;
-    margin-top: 30px;
-    margin-left: 5px;
+    margin-top: 1.875rem;
+    margin-left: .3125rem;
   }
 
   .el-upload {
     float: left;
-    height: 100px;
-    width: 50px;
+    height: 6.25rem;
+    width: 3.125rem;
 
   }
 </style>

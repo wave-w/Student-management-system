@@ -49,6 +49,7 @@ import TVolunteer from '@/views/teacher/volunteer/index'
 // 加减分
 import TBpoints from '@/views/teacher/sfraction/sbpoints'
 import TMpoints from '@/views/teacher/sfraction/smpoints'
+
 const routes = [{
     path: '/',
     component: Login
@@ -61,7 +62,8 @@ const routes = [{
   {
     path: '/shome',
     component: StudentHome,
-    children: [{
+    children: [
+      {
         path: '/',
         component: Information
       },
@@ -201,22 +203,36 @@ const routes = [{
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
 })
 
-// router.beforeEach((to, from, next) => {
-//   let isAuthenticated = false
-//   if (window.sessionStorage.getItem('token') != null) {
-//     isAuthenticated = window.sessionStorage.getItem('token')
-//     window.sessionStorage.clear()
-//   }
-//   if (to.name !== 'Login' && !isAuthenticated){ 
-//     // this.$router.push('/login');
-//     next({name:Login})
-//   }
-//   else{ next() }
-// })
+// window.addEventListener('beforeunload', e => beforeunloadHandler(e))
+
+// function beforeunloadHandler(e){
+
+// }
+ // if (window.sessionStorage.getItem('role') == 'ROLE_headmaster' ) {
+      //     this.$router.replace('/shome')
+      //   } else if (window.sessionStorage.getItem('role') == 'ROLE_student') {
+      //     this.$router.replace('/thome')
+      //   }else console.log(222);
+
+  router.beforeEach((to, from, next) => {
+    if (window.sessionStorage.getItem('role') == 'ROLE_instructor'&&to.path == '/' && from.path == '/') {
+      router.replace('/thome')
+    } else if(window.sessionStorage.getItem('role') == 'ROLE_student'&&to.path == '/' && from.path == '/') {
+      router.replace('/shome')
+    }else if(window.sessionStorage.getItem('role') == 'ROLE_headmaster'&&to.path == '/' && from.path == '/') {
+      router.replace('/thome')
+    }else{
+      next() 
+    }
+    // console.log(from.path);
+    // console.log(to.path);
+    // console.log(name);
+  })
+
 
 export default router

@@ -1,67 +1,20 @@
 <template>
-  <div class="mainhome">
-    <div class="nav_top">
-      <img src="~@/assets/images/gmu.png" alt="gmu">
-      <div class="btnbox">
-        <a href="http://www.gmu.cn/?src=titanwolf.org" target="_blank"><i class="iconfont icon-wangluo">官网</i></a>
-        <a href="#" target="_blank"><i class="iconfont icon-dangjian">党建</i></a>
-        <i class="iconfont icon-tuichu_huaban1" @click="loginout">退出</i>
-      </div>
-    </div>
-    <div class="navmenu">
-      <el-menu :default-active="activeIndex" mode="vertical" text-color='#000' active-text-color='#fff' :router='true'
-        unique-opened background-color='#00702b' class="mainmenu">
-        <el-submenu index="2">
-          <template slot="title"><i class="iconfont icon-drxx81"></i>请假申请</template>
-          <el-menu-item :index="router.application.apply"><i class="iconfont icon-e53322"></i>申请</el-menu-item>
-          <el-menu-item :index="router.application.failed"><i class="iconfont icon-weitongguo"></i>未通过</el-menu-item>
-          <el-submenu index="2-2">
-            <template slot="title"><i class="iconfont icon-tongguo"></i>已通过</template>
-            <el-menu-item :index="router.application.nadopt"><i class="iconfont icon-xiaojiashenpi"></i>未销假</el-menu-item>
-            <el-menu-item :index="router.application.adopt"><i class="iconfont icon-xiaojiaguanli"></i>已销假</el-menu-item>
-          </el-submenu>
-        </el-submenu>
-        <el-submenu index="3">
-          <template slot="title">
-              <el-badge :is-dot='$store.state.ismess' style="position: absolute;"></el-badge>
-            <i class="iconfont icon-daifucha"></i>三项文明</template>
-          <el-menu-item :index="router.civilization.dorm"><i class="iconfont icon-fangjianshu"></i>寝室文明
-            <el-badge :value="$store.state.count"  :max="99" :hidden='$store.state.isshowmess' style="position: absolute; right: 10px;"></el-badge>
-          </el-menu-item>
-          <el-menu-item :index="router.civilization.class"><i class="iconfont icon-kecheng"></i>课堂文明</el-menu-item>
-        </el-submenu>
-        <el-menu-item :index="router.fiveone"><i class="iconfont icon-zuoye"></i>五个一</el-menu-item>
-        <el-menu-item :index="router.volunteer"><i class="iconfont icon-weibiaoti--"></i>志愿活动</el-menu-item>
-        <el-submenu index="4">
-          <template slot="title"><i class="iconfont icon-fenshuxian"></i>加减分项</template>
-          <el-menu-item :index="router.sfraction.bpoints"><i class="iconfont icon-wj-by"></i>加分项</el-menu-item>
-          <el-menu-item :index="router.sfraction.mpoints"><i class="iconfont icon-wj-pp"></i>减分项</el-menu-item>
-        </el-submenu>
-      </el-menu>
-    </div>
-    <div class="main">
-      <router-view />
-    </div>
+  <div>
+    <keep-alive>
+    <home :router='routers'></home></keep-alive>
   </div>
 </template>
 <script>
-  import '@/assets/css/normal.css';
-   import {
-    client,
-    connect
-  } from "@/network/config/mqtt";
-    import {
-    logout
-  } from '@/network/login';
-  import {
-    getdorm
-  } from '@/network/teacher/dorm';
+  import {client} from "@/network/config/mqtt";
+  import Home from '@/components/common/Home'
   export default {
     name: '',
+    components: {
+      Home
+    },
     data() {
       return {
-        activeIndex: '/welcome',
-        router: {
+        routers: {
           application: {
             apply: '/tslave',
             failed: '/tfailed',
@@ -70,121 +23,63 @@
           },
           civilization: {
             dorm: '/tsdormcivi',
-            class:'/tsclasscivi'
+            class: '/tsclasscivi'
           },
           fiveone: '/tsfone',
-          volunteer:'/tsactiv',
-          sfraction:{
-            bpoints:'/tsbpoints',
-            mpoints:'/tsmpoints'
+          volunteer: '/tsactiv',
+          sfraction: {
+            bpoints: '/tsbpoints',
+            mpoints: '/tsmpoints'
           }
-        }
+        },
       }
-      
+
     },
-    created() {
+    mounted() {
       setTimeout(() => {
-        let college = window.sessionStorage.getItem('teacherinfo')
-       getdorm(college).then(res => {
-           res.data2.forEach(item => {
-            if (item.readIt == 'unread') {
-              this.$store.state.count++
-              this.$store.state.ismess = true
-              this.$store.state.isshowmess = false
-            }
-            if (item.feedbackReadIt == 'unread') {
-              this.$store.state.count++
-              this.$store.state.ismess = true
-              this.$store.state.isshowmess = false
-            }
-            if (this.$store.state.count == 0) {
-              this.$store.state.ismess = false
-              this.$store.state.isshowmess = true
-            }
-          });
-          });
-      }, 500);
-    },
-      mounted(){
-      let colla =  window.sessionStorage.getItem('collegeAbbreviation')
-      connect()
-      let sconntime = setInterval(() => {
-        if (!client.connected) {
-          this.$message.error('网络错误请刷新页面')
-        }
-      }, 2000);
-      setTimeout(() => {
-        if (client.connected) {
-          clearInterval(sconntime)
-        }
-      }, 10000);
-      setTimeout(() => {
-        client.subscribe(`dorm${colla}`, msg => {
-        this.$store.state.count++
-        this.$message("有新的学生反馈消息,刷新以查看")
+         let colla = window.sessionStorage.getItem('collegeAbbreviation')
+          if (window.sessionStorage.getItem('role')== 'ROLE_instructor'){
+        // 新的学生反馈信息提示
+        client.subscribe(`feed${colla}`, msg => {
+            this.$store.state.count++
+            this.$store.state.ismess = true
+            this.$store.state.isshowmess = false
+            this.$message("有新的学生反馈消息")
         }, {})
+        // 新的查寝信息提示
         client.subscribe(colla, msg => {
-        console.log(msg.body);
-        this.$store.state.count++
-        this.$message("有新的学生查寝消息,刷新以查看")
+          this.$store.state.count++
+           this.$store.state.ismess = true
+           this.$store.state.isshowmess = false
+          this.$message("有新的学生查寝消息")
         }, {})
-      }, 1000);
-    },
-    destroyed() {
-      logout().then()
-    },
-    methods: {
-      loginout() {
-        logout().then()
-        this.$router.push('/login')
-      }
+        // 老师更改寝室状态
+        client.subscribe(`changedorm${colla}`, msg => {
+          let mes = JSON.parse(msg.body)
+          this.$message(`有老师把${mes.num}寝室在${mes.time}号的查寝状态更改为更改为合格`)
+        }, {})
+          }
+          let classes = window.sessionStorage.getItem('classs')
+    if (window.sessionStorage.getItem('role') == 'ROLE_headmaster'){
+       client.subscribe(classes, msg => {
+          this.$store.state.count++
+           this.$store.state.ismess = true
+           this.$store.state.isshowmess = false
+          this.$message("班级有新的学生查寝消息")
+        }, {})
+
+         client.subscribe(`apply${classes}`, msg => {
+             this.$store.state.applycount++
+             this.$store.state.applyismess = true
+             this.$store.state.applyisshowmess = false
+             this.$message("班级有新的学生请假消息")
+          }, {})
+           }
+      }, 5000);
     },
   }
 </script>
 
 <style scoped>
-  .nav_top {
-    height: 8.75rem;
-    background: url('~@/assets/images/top_zs.png') no-repeat #00702b 565px 50px;
-  }
 
-  .nav_top img {
-    float: left;
-    margin-top: 30px;
-    margin-left: 160px;
-  }
-
-  .navmenu {
-    float: left;
-    width: 200px;
-  }
-
-  .mainmenu {
-     height: 36.3125rem;
-  }
-
-  .btnbox {
-    float: right;
-    margin-top: 60px;
-  }
-
-  i {
-    margin: 15px;
-    font-size: 25px;
-    cursor: pointer;
-  }
-
-  i:hover {
-    color: rgb(0, 130, 153);
-  }
-
-  .is-active {
-    background-color: rgba(109, 29, 29, 0.5) !important;
-  }
-  .main{
-     height: 36.3125rem;
-    width: 70rem;
-    margin-left: 350px;
-   
-  }
 </style>

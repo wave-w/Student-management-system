@@ -16,3 +16,14 @@ export function logout(){
         method:'POST'
     })
 }
+
+
+export function changepassword(username,oldPasswd,newPasswd){
+    return request({
+        url:'/changePasswd',
+        method:'POST',
+        params:{
+            username,oldPasswd,newPasswd
+        }
+    })
+}

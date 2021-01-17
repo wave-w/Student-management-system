@@ -1,7 +1,10 @@
 <template>
   <div>
+    <el-card>
     {{teacherinfo}}
     {{date}}
+    {{data3}}
+    </el-card>
   </div>
 </template>
 
@@ -12,7 +15,8 @@ export default {
   data() {
     return {
       teacherinfo:{},
-      date:''
+      date:'',
+      data3:''
     }
   },
   created() {
@@ -20,8 +24,12 @@ export default {
     getteaInfo(tid).then(res=>{
         this.teacherinfo = res.data
         this.date = res.date
-        window.sessionStorage.setItem('teacherinfo',res.data.college)
+        this.data3 = res.data3
+        window.sessionStorage.setItem('college',res.data.college)
         window.sessionStorage.setItem('collegeAbbreviation',res.data.collegeAbbreviation)
+        window.sessionStorage.setItem('className',res.data.className)
+        window.sessionStorage.setItem('isInstructor',res.data.isInstructor)
+        window.sessionStorage.setItem('classs',res.data3)
     })
   },
 }

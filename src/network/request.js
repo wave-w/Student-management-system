@@ -3,7 +3,7 @@ import Router from '@/router/index'
 import { ColorPicker, Message } from 'element-ui';
 export function request(config) {
     const intance = axios.create({
-        baseURL: 'http://111.75.252.147:8099',
+        baseURL: 'http://111.75.252.147/score',
      // baseURL:'http://119.23.53.78:8888/api/private/v1',
         withCredentials:true,
         timeout: 10000
@@ -21,15 +21,15 @@ export function request(config) {
         })
     intance.interceptors.response.use(
         response => {
-            if(response.data.message == '尚未登录,请登录!'){
-                      Router.push('/login')
-                      Message.error("尚未登录,请重新登录")
+            if(response.data.message == '尚未登录,请登录!' || response.data.code == 403){
+                     Message.error("尚未登录,请重新登录") 
+                     Router.push('/login')
                 }
             return response.data
         },
         error=>{
-            // Router.push('/login')
-            Message.error("出错啦！！！请刷新页面")
+            Message.error("出错啦！！！请重新登录")
+            Router.push('/login')
             console.log(error);
         })
         return intance(config)

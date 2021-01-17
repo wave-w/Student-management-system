@@ -1,84 +1,105 @@
 <template>
-	<div class="mainsinf">
-		<table border="1" width="100" height="550" align="center" cellspacing="0">
-			<tr align="center">
-				<td bgcolor="#ededef">姓名:</td>
-				<td>{{stuinfor.name}}</td>
-				<td bgcolor="#ededed">学号:</td>
-				<td>{{stuinfor.stuNum}}</td>
-				<td bgcolor="#ededed">性别:</td>
-				<td>{{stuinfor.sex}}</td>
-			</tr>
-			<tr align="center">
-				<td bgcolor="#ededed">民族:</td>
-				<td>{{stuinfor.nation}}</td>
-				<td bgcolor="#ededed">班级:</td>
-				<td>{{stuinfor.className}}</td>
-				<td bgcolor="#ededed">专业:</td>
-				<td>{{stuinfor.major}}</td>
-			</tr>
-			<tr align="center">
-				<td bgcolor="#ededed">入学年份:</td>
-				<td>{{stuinfor.enrollmentYear}}</td>
-				<td bgcolor="#ededed">班主任:</td>
-				<td>{{stuinfor.headmasterName}}</td>
-				<td bgcolor="#ededed">班主任电话:</td>
-				<td>{{stuinfor.headmasterPhone}}</td>
-			</tr>
-			<tr align="center">
-				<td bgcolor="#ededed">身份证号:</td>
-				<td>{{stuinfor.idNumber}}</td>
-				<td bgcolor="#ededed">出生年月:</td>
-				<td>{{stuinfor.enrollmentYear}}</td>
-				<td bgcolor="#ededed">父母电话:</td>
-				<td>{{stuinfor.parentsPhone}}</td>
-			</tr>
-			<tr align="center">
-				<td bgcolor="#ededed">省份:</td>
-				<td>{{stuinfor.registeredResidence}}</td>
-				<td bgcolor="#ededed">联系电话:</td>
-				<td>{{stuinfor.phone}}</td>
-				<td bgcolor="#ededed">学制:</td>
-				<td>{{stuinfor.educationalSystem}}</td>
-			</tr>
-			<!-- <tr align="center">
-				<td bgcolor="#ededed">自我评价</td>
-				<td colspan="7"></td>
-			</tr> -->
-		</table>
-
-	</div>
+    <div>
+        <el-card>
+            <table border='1' style="margin:auto;" width="800px">
+                <tbody>
+                    <tr height="50" style="text-align: center;">
+                        <td>姓名</td>
+                        <td width="100">{{stuinfor.name}}</td>
+                        <td width="100">性别</td>
+                        <td width="100">{{stuinfor.sex}}</td>
+                        <td>班主任</td>
+                        <td>{{stuinfor.headmasterName}}</td>
+                        <td rowspan="3" width="120">照片</td>
+                    </tr>
+                    <tr height="50" style="text-align: center;">
+                        <td>学号</td>
+                        <td colspan='2'>{{stuinfor.stuNum}}</td>
+                        <td>学院</td>
+                        <td colspan='2'>{{stuinfor.college}}</td>
+                    </tr>
+                    <tr height="50" style="text-align: center;">
+                        <td>班级</td>
+                        <td colspan="2">{{stuinfor.className}}</td>
+                        <td>专业</td>
+                        <td colspan="2">{{stuinfor.major}}</td>
+                    </tr>
+                    <tr height="50" style="text-align: center;">
+                        <td>籍贯</td>
+                        <td colspan="2">{{stuinfor.registeredResidence}}</td>
+                        <td>入学年份</td>
+                        <td>{{stuinfor.enrollmentYear}}</td>
+                        <td>寝室</td>
+                        <td>{{stuinfor.dormNum}}</td>
+                    </tr>
+                    <tr height="50" style="text-align: center;">
+                        <td>身份证号码</td>
+                        <td colspan="3">{{stuinfor.idNumber}}</td>
+                        <td>联系电话</td>
+                        <td colspan="2">{{stuinfor.phone}}</td>
+                    </tr>
+                    <tr height="50" style="text-align: center;">
+                        <td>父母电话</td>
+                        <td colspan="3">{{stuinfor.parentsPhone}}</td>
+                        <td>班主任电话</td>
+                        <td colspan="2">{{stuinfor.headmasterPhone}}</td>
+                    </tr>
+                    <tr height="50" style="text-align: center;">
+                        <td>政治面貌</td>
+                        <td colspan="3">{{stuinfor.politicalOutlook}}</td>
+                        <td>出身年月</td>
+                        <td colspan="2">{{stuinfor.birthday}}</td>
+                    </tr>
+                    <tr height="50" style="text-align: center;">
+                        <td>教育制度</td>
+                        <td>{{stuinfor.educationalSystem}}</td>
+                        <td>国籍</td>
+                        <td>{{stuinfor.homeAddress}}</td>
+                        <td>电子邮箱</td>
+                        <td colspan="2">{{stuinfor.militaryParticipation}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="7" align="center" height='30'><strong>个人评价</strong></td>
+                    </tr>
+                     <tr>
+                         <td colspan="7" height="100">
+                         </td>
+                     </tr>
+                </tbody>
+            </table>
+        </el-card>
+    </div>
 </template>
 <script>
-	import {
-		getsinfor
-	} from '@/network/student/sinfor';
-	export default {
-		data() {
-			return {
-				stuinfor: {}
-			}
-		},
-		methods: {},
-		created() {
-			let sid = window.sessionStorage.getItem('sid')
-			getsinfor(sid).then(res => {
-				this.stuinfor = res.data
-				this.$store.state.dormNum = res.data.dormNum
-				window.sessionStorage.setItem('collegeAbbreviation',res.data.collegeAbbreviation)
-			})
-		},
-	}
+    import {getsinfor} from '@/network/student/sinfor';
+    export default {
+        data() {
+            return {
+                stuinfor: {}
+            }
+        },
+        methods: {},
+        created() {
+            let sid = window.sessionStorage.getItem('sid')
+            getsinfor(sid).then(res => {
+                // console.log(res);
+                this.stuinfor = res.data
+                window.sessionStorage.setItem('collegeAbbreviation', res.data.collegeAbbreviation)
+                window.sessionStorage.setItem('sdormnum', res.data.dormNum)
+                window.sessionStorage.setItem('college', res.data.college)
+                window.sessionStorage.setItem('class', res.data3)
+            })
+        },
+    }
 </script>
 
 <style scoped>
-	.mainsinf {
-		position: relative;
-		margin-left: 180px;
-		top: 15px;
-	}
+    table {
+        border-collapse: collapse;
+    }
 
-	td {
-		min-width: 100px;
-	}
+    table,
+    td.th {
+        border: 1px solid blue;
+    }
 </style>
