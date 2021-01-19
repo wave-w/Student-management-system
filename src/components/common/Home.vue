@@ -12,17 +12,25 @@
             <el-menu :default-active="$route.path" mode="vertical" text-color='#000' active-text-color='#fff'
                 :router='true' unique-opened background-color='#00702b' class="mainmenu">
                 <el-submenu index="2">
-                    <template slot="title"><el-badge :is-dot='applyismess' style="position: absolute;"></el-badge>
-                    <i class="iconfont icon-drxx81"></i>请假申请</template>
-                    <el-menu-item :index="router.application.apply"> <el-badge :value="applycount" :max="99" :hidden='applyisshowmess'
+                    <template slot="title">
+                        <el-badge :is-dot='applyismess' style="position: absolute;"></el-badge>
+                        <i class="iconfont icon-drxx81"></i>请假申请
+                    </template>
+                    <el-menu-item :index="router.application.apply">
+                        <el-badge :value="applycount" :max="99" :hidden='applyisshowmess'
                             style="position: absolute; right: .625rem;"></el-badge>
-                            <i class="iconfont icon-e53322"></i>申请
+                        <i class="iconfont icon-e53322"></i>申请
                     </el-menu-item>
                     <el-menu-item :index="router.application.failed"><i class="iconfont icon-weitongguo"></i>未通过
                     </el-menu-item>
                     <el-submenu index="2-2">
-                        <template slot="title"><i class="iconfont icon-tongguo"></i>已通过</template>
-                        <el-menu-item :index="router.application.nadopt"><i class="iconfont icon-xiaojiashenpi"></i>未销假
+                        <template slot="title">
+                            <el-badge :is-dot='nadoptismess' style="position: absolute;"></el-badge>
+                            <i class="iconfont icon-tongguo"></i>已通过
+                        </template>
+                        <el-menu-item :index="router.application.nadopt"><i class="iconfont icon-xiaojiashenpi"></i>
+                            <el-badge :value="nadoptcount" :max="99" :hidden='nadoptisshowmess'
+                                style="position: absolute; right: .625rem;"></el-badge>未销假
                         </el-menu-item>
                         <el-menu-item :index="router.application.adopt"><i class="iconfont icon-xiaojiaguanli"></i>已销假
                         </el-menu-item>
@@ -78,9 +86,20 @@
 </template>
 
 <script>
-    import {logout, changepassword} from '@/network/login';
-    import { getdorm} from '@/network/teacher/dorm';
-    import {getsdorm} from '@/network/student/dorm';
+    import {
+        logout,
+        changepassword
+    } from '@/network/login';
+    import {
+        getdorm
+    } from '@/network/teacher/dorm';
+    import {
+        getsdorm
+    } from '@/network/student/dorm';
+    import {
+        changepage,
+        getnadopt
+    } from '@/network/teacher/apply';
     export default {
         name: '',
         props: {
@@ -93,6 +112,9 @@
         },
         created() {
             let role = window.sessionStorage.getItem('role')
+            let str = role;
+            let reg = new RegExp("ROLE_", "g");
+            let newrole = str.replace(reg, "");
             if (role == 'ROLE_instructor' || role == 'ROLE_headmaster') {
                 setTimeout(() => {
                     let college = window.sessionStorage.getItem('college')
@@ -106,8 +128,10 @@
                                 this.$store.state.ismess = true
                                 this.$store.state.isshowmess = false
                             }
-                            if ((role == 'ROLE_instructor' && item.fdyFeedbackReadIt == 'unread') ||
-                                (role == 'ROLE_headmaster' && item.feedbackReadIt == 'unread')) {
+                            if ((role == 'ROLE_instructor' && item.fdyFeedbackReadIt ==
+                                    'unread') ||
+                                (role == 'ROLE_headmaster' && item.feedbackReadIt == 'unread')
+                            ) {
                                 this.$store.state.count++
                                 this.$store.state.ismess = true
                                 this.$store.state.isshowmess = false
@@ -118,6 +142,38 @@
                             }
                         });
                     });
+                    changepage(newrole, college, className, 1, 10000000)
+                        .then(res => {
+                            this.$store.state.applycount = res.data2.total
+                            this.$store.state.applyismess = true
+                            this.$store.state.applyisshowmess = false
+                            // console.log(res);
+                            //   console.log(res.data2.records.length); 
+                            if (this.$store.state.applycount == 0) {
+                                this.$store.state.applyisshowmess = true
+                            }
+                             if (this.$store.state.applycount == 0 && this.$store.state.nadoptcount == 0) {
+                                this.$store.state.applyismess = false
+                            }
+                        });
+                    getnadopt(newrole, college, className, 1, 10000000).then(res => {
+                        res.data2.records.forEach(item => {
+                            if (item.examineState == 'canceling') {
+                                this.$store.state.nadoptcount++
+                                this.$store.state.applyismess = true
+                                this.$store.state.nadoptismess = true
+                                this.$store.state.nadoptisshowmess = false
+                            }
+                            if (this.$store.state.nadoptcount == 0) {
+                                this.$store.state.nadoptismess = false
+                                this.$store.state.nadoptisshowmess = true
+                            }
+                            if (this.$store.state.applycount == 0 && this.$store.state
+                                .nadoptcount == 0) {
+                                this.$store.state.applyismess = false
+                            }
+                        })
+                    })
                 }, 2000);
             } else if (role == 'ROLE_student') {
                 setTimeout(() => {
@@ -147,7 +203,7 @@
             isshowmess() {
                 return this.$store.state.isshowmess
             },
-             applycount() {
+            applycount() {
                 return this.$store.state.applycount
             },
             applyismess() {
@@ -155,6 +211,15 @@
             },
             applyisshowmess() {
                 return this.$store.state.applyisshowmess
+            },
+            nadoptcount() {
+                return this.$store.state.nadoptcount
+            },
+            nadoptismess() {
+                return this.$store.state.nadoptismess
+            },
+            nadoptisshowmess() {
+                return this.$store.state.nadoptisshowmess
             }
         },
         data() {
@@ -251,11 +316,13 @@
         min-height: 35rem;
         height: 80.65vh;
     }
-    .main{
+
+    .main {
         max-height: 600px;
         overflow: hidden;
         overflow-x: hidden;
     }
+
     .btnbox {
         float: right;
         margin-top: 3.75rem;

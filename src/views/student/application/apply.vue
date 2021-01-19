@@ -114,7 +114,7 @@
   import {client} from "@/network/config/mqtt";
   import {getsinfor} from '@/network/student/sinfor';
   import VDistpicker from 'v-distpicker'
-import { sendapply,getapply } from '@/network/student/apply';
+import { sendapply,getapply,getnadoptapply } from '@/network/student/apply';
   export default {
     name: 'sapply',
     components: {VDistpicker},
@@ -142,27 +142,27 @@ import { sendapply,getapply } from '@/network/student/apply';
         apprules: {
           phone: [{
             required: true,
-            message: '请输入反馈描述',
+            message: '请输入电话',
             trigger: 'blur'
           }],
           headmasterPhone: [{
             required: true,
-            message: '请输入反馈描述',
+            message: '请输入班主任电话',
             trigger: 'blur'
           }],
           parentPhone: [{
             required: true,
-            message: '请输入反馈描述',
+            message: '请输入父母电话',
             trigger: 'blur'
           }],
           whereabouts: [{
             required: true,
-            message: '请输入反馈描述',
+            message: '请输入去向',
             trigger: 'blur'
           }],
           specificReasons: [{
             required: true,
-            message: '请输入反馈描述',
+            message: '请输入说明',
             trigger: 'blur'
           }]
         },
@@ -194,8 +194,8 @@ import { sendapply,getapply } from '@/network/student/apply';
           this.applyform.headmaster,this.applyform.headmasterPhone,this.applyform.whereabouts,this.applyform.parentPhone,this.applyform.reason,
           this.applyform.specificReasons,this.applyform.picture,this.applyform.startdate,this.applyform.enddate,this.applyform.leavedays).then(res=>{
              if(res.code == 200){
-                client.send(`apply${this.classs}`, {}, 1)
-                 client.send(`apply${this.classs}1`, {}, JSON.stringify(this.applyform))
+                 client.send(`apply${this.classs}`, {}, 1)
+                 client.send(`apply1${this.classs}`, {}, JSON.stringify(this.applyform))
                   this.isdisabled = true
                   this.applytext = '申请中...'
                   this.path = this.Picturepath
@@ -260,10 +260,16 @@ import { sendapply,getapply } from '@/network/student/apply';
         }
        }
       })
+       getnadoptapply(this.applyform.stuNum,this.applyform.username).then(res=>{
+        //  console.log(res);
+         if(res.data2.length!= 0){
+            if(res.data2[0].examineState=='canceling' ||res.data2[0].examineState=='pass' ){
+               this.isdisabled = true
+               this.applytext = '你还有未注销的请假记录' 
+              }
+         }
+       })
     },
-    mounted() {
-
-    }
   }
 </script>
 

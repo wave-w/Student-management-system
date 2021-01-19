@@ -58,6 +58,21 @@
           let mes = JSON.parse(msg.body)
           this.$message(`有老师把${mes.num}寝室在${mes.time}号的查寝状态更改为更改为合格`)
         }, {})
+          // 辅导员获取请假
+        client.subscribe(`apply${colla}`, msg => {
+           this.$store.state.applycount++
+           this.$store.state.applyismess = true
+           this.$store.state.applyisshowmess = false
+          this.$message(`有新的学生请假消息`)
+        }, {})
+        // 辅导员获取申请销假
+          client.subscribe(`nadopt${colla}`, msg => {
+            this.$store.state.nadoptcount++
+            this.$store.state.applyismess = true
+            this.$store.state.nadoptismess = true
+            this.$store.state.nadoptisshowmess = false
+          this.$message(`有新的学生申请销假消息`)
+        }, {})
           }
           let classes = window.sessionStorage.getItem('classs')
     if (window.sessionStorage.getItem('role') == 'ROLE_headmaster'){
@@ -67,15 +82,23 @@
            this.$store.state.isshowmess = false
           this.$message("班级有新的学生查寝消息")
         }, {})
-
+        // console.log(`apply${classes}`);
          client.subscribe(`apply${classes}`, msg => {
              this.$store.state.applycount++
              this.$store.state.applyismess = true
              this.$store.state.applyisshowmess = false
              this.$message("班级有新的学生请假消息")
           }, {})
+          // console.log(`nadopt${classes}`);
+         client.subscribe(`nadopt${classes}`, msg => {
+            this.$store.state.nadoptcount++
+            this.$store.state.applyismess = true
+            this.$store.state.nadoptismess = true
+            this.$store.state.nadoptisshowmess = false
+             this.$message("班级有新的学生销假消息")
+          }, {})
            }
-      }, 5000);
+      }, 8000);
     },
   }
 </script>

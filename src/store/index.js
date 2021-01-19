@@ -13,6 +13,9 @@ export default new Vuex.Store({
     applycount:0,
     applyismess: false,
     applyisshowmess:true,
+    nadoptcount:0,
+    nadoptismess: false,
+    nadoptisshowmess:true,
   },
   mutations: {
   },
