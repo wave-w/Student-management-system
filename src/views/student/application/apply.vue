@@ -111,7 +111,7 @@
   </div>
 </template>
 <script>
-  import {client} from "@/network/config/mqtt";
+  import {sendmess,client} from "@/network/config/mqtt";
   import {getsinfor} from '@/network/student/sinfor';
   import VDistpicker from 'v-distpicker'
 import { sendapply,getapply,getnadoptapply } from '@/network/student/apply';
@@ -194,8 +194,10 @@ import { sendapply,getapply,getnadoptapply } from '@/network/student/apply';
           this.applyform.headmaster,this.applyform.headmasterPhone,this.applyform.whereabouts,this.applyform.parentPhone,this.applyform.reason,
           this.applyform.specificReasons,this.applyform.picture,this.applyform.startdate,this.applyform.enddate,this.applyform.leavedays).then(res=>{
              if(res.code == 200){
+              //  sendmess(`apply${this.classs}`,'hh').then()
+              //  sendmess(`apply${this.classs}`,1).then()
                  client.send(`apply${this.classs}`, {}, 1)
-                 client.send(`apply1${this.classs}`, {}, JSON.stringify(this.applyform))
+                //  client.send(`apply1${this.classs}`, {}, JSON.stringify(this.applyform))
                   this.isdisabled = true
                   this.applytext = '申请中...'
                   this.path = this.Picturepath

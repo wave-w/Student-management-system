@@ -18,7 +18,8 @@
           <el-option label="已读" value="read"></el-option>
           <el-option label="未读" value="unread"></el-option>
         </el-select>
-        <el-link href="http://111.75.252.147/score/updownload/exceldown" :underline='false'>
+        <!-- http://111.75.252.147/score/updownload/exceldown -->
+        <el-link :href="downdorm" :underline='false'>
           <el-button type="primary" plain style="margin-left: 1.875rem;margin-top: -0.3125rem;">导出表格</el-button>
         </el-link>
         <!-- 主表格渲染 -->
@@ -45,7 +46,7 @@
           <el-table-column prop="feedbackDescribe" label="反馈情况" align='center'>
             <template slot-scope="scope">
               <el-button type="warning" size='small' @click='feedback(scope.$index,scope.row)'>反馈情况
-                <el-badge :is-dot="((role== 'ROLE_instructor' && 
+                <el-badge :is-dot="((role == 'ROLE_instructor' && 
                 scope.row.fdyFeedbackReadIt == 'unread') ||(role== 'ROLE_headmaster' 
                 && scope.row.feedbackReadIt == 'unread'))?t:f" :hidden='isfhad[scope.$index]'
                   style="position: absolute;top:.625rem"></el-badge>
@@ -57,6 +58,8 @@
           :page-sizes="pagesizes" :page-size="pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total"
           style="margin-left: 17.5rem; margin-top: 1.25rem;">
         </el-pagination>
+        <el-button icon="el-icon-view" style="position: absolute;top:505px;right: 50px;" @click="toallread">全部合格已读
+        </el-button>
       </el-card>
     </div>
     <!-- 显示寝室详情 -->
@@ -79,7 +82,7 @@
         </el-image>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false" >{{title}}</el-button>
+        <el-button @click="dialogVisible = false">{{title}}</el-button>
         <el-button type="primary" @click="show" :disabled='showtitie'>{{title1}}</el-button>
       </span>
     </el-dialog>
@@ -93,8 +96,17 @@
   </div>
 </template>
 <script>
-  import {client} from "@/network/config/mqtt";
-  import {getdorm,findbytime,changeread,changestate,changeFkRead} from '@/network/teacher/dorm';
+  import {
+    sendmess,client
+  } from "@/network/config/mqtt";
+  import {
+    getdorm,
+    findbytime,
+    changeread,
+    changestate,
+    changeFkRead,
+    allread
+  } from '@/network/teacher/dorm';
   export default {
     name: '',
     data() {
@@ -130,45 +142,61 @@
         shows: false,
         college: '',
         className: '',
-        isInstructor: '',
+        newrole: '',
         feedbackdorm: '',
         feedcheckTime: '',
+        downdorm: '',
         // 改变页码
         currentPage: 1,
-        pagesize: 6,
+        pagesize: 5,
         total: 0,
-        pagesizes: [0, 6, 10, 20, 30, 40, 50],
+        pagesizes: [5, 10, 20, 30, 40, 50],
         fdormNum: '',
-        role:'',
-        showtitie: false
+        role: '',
+        showtitie: false,
+        tclass: ''
       }
     },
     created() {
       this.role = window.sessionStorage.getItem('role')
-      if (this.role== 'ROLE_headmaster') {
+      this.college = window.sessionStorage.getItem('college')
+      this.className = window.sessionStorage.getItem('className')
+      if (this.role == 'ROLE_headmaster') {
         this.showclass = false
       }
     },
     mounted() {
       setTimeout(() => {
-        this.college = window.sessionStorage.getItem('college')
-        this.className = window.sessionStorage.getItem('className')
-        this.isInstructor = window.sessionStorage.getItem('isInstructor')
+        let str = this.role;
+        let reg = new RegExp("ROLE_", "g");
+        this.newrole = str.replace(reg, "");
+        if (this.role == 'ROLE_headmaster') {
+          this.classesvalue = this.className
+        } else {
+          this.classesvalue = ""
+        }
         this.timechange()
+        this.downdorm =
+          `http://111.75.252.147/score/updownload/exceldown?position=${this.newrole}&className=${this.classesvalue}&college=${this.college}`
       }, 1000);
     },
     methods: {
       timechange() {
-        if(this.role== 'ROLE_headmaster'){
+         if (this.role == 'ROLE_headmaster') {
           this.classesvalue = this.className
         }
-        findbytime(this.college, this.classesvalue, this.isInstructor, this.value, this.isqualified.value,
+        // console.log(this.college, this.classesvalue, this.newrole, this.value, this.isqualified.value,
+        //   this.isread.value, this.currentPage, this.pagesize);
+        findbytime(this.college, this.classesvalue, this.newrole, this.value, this.isqualified.value,
           this.isread.value, this.currentPage, this.pagesize).then(res => {
           this.DromData = res.data2
-          this.total = res.data
-        })
+          this.classes = res.data
+          this.datatime = res.data3
+          this.total = parseInt(res.message)
+        })      
       },
       details(index, row) {
+        // console.log(row);
         this.dialogVisible = true
         this.dormtext = row.qualifiedDescribe
         this.showt = true
@@ -179,11 +207,13 @@
         }
         changeread(row.checkTime, row.dormNum, row.feedbackDescribe,
           row.feedbackPicture, row.id, row.readIt, row.state, row.stuReadIt,
-          row.unqualifiedDescribe, row.unqualifiedPicture,this.isInstructor).then(res => {
+          row.unqualifiedDescribe, row.unqualifiedPicture, this.newrole).then(res => {
+            console.log(res);
           this.dromsData = res.data
+          this.timechange()
         })
-        if ((this.role== 'ROLE_instructor' && row.fdyReadIt == 'unread') ||
-        (this.role== 'ROLE_headmaster' && row.readIt == 'unread')) {
+        if ((this.role == 'ROLE_instructor' && row.fdyReadIt == 'unread') ||
+          (this.role == 'ROLE_headmaster' && row.readIt == 'unread')) {
           this.$store.state.count--
           this.ishad.push('')
           this.ishad[index] = true
@@ -208,19 +238,22 @@
           this.title = '不合格'
           this.title1 = '合格'
         }
-        if(this.role== 'ROLE_headmaster' && this.dormrow.state == '不合格'){
+        if (this.role == 'ROLE_headmaster' && this.dormrow.state == '不合格') {
           this.showtitie = true
-           this.title = '确定'
+          this.title = '确定'
         }
         changeFkRead(row.checkTime, row.dormNum, row.feedbackDescribe,
           row.feedbackPicture, row.id, row.readIt, row.state,
-          row.stuReadIt, row.unqualifiedDescribe, row.unqualifiedPicture,this.isInstructor).then(() => {})
-        if ((this.role== 'ROLE_instructor' && row.fdyFeedbackReadIt == 'unread') ||
-        (this.role== 'ROLE_headmaster' && row.feedbackReadIt == 'unread')) {
+          row.stuReadIt, row.unqualifiedDescribe, row.unqualifiedPicture, this.newrole).then(() => {
+            this.timechange()
+          })
+        if ((this.role == 'ROLE_instructor' && row.fdyFeedbackReadIt == 'unread') ||
+          (this.role == 'ROLE_headmaster' && row.feedbackReadIt == 'unread')) {
           this.$store.state.count--
           this.isfhad.push('')
           this.isfhad[index] = true
-          if (this.role== 'ROLE_instructor'){
+          if (this.role == 'ROLE_instructor') {
+            // sendmess(`changedorm${this.fdormNum}`,'1').then()
             client.send(`changedorm${this.fdormNum}`, {}, 1)
           }
         }
@@ -246,6 +279,7 @@
           this.suredialogVisible = false
           this.dialogVisible = false
           this.$message.success("更改合格成功")
+          // sendmess(`dorm${this.fdormNum}`,'1').then()
           client.send(`dorm${this.fdormNum}`, {}, 1)
           let num = this.feedbackdorm
           let time = this.feedcheckTime
@@ -253,9 +287,10 @@
             num,
             time
           }
-           if (this.role== 'ROLE_instructor'){
-          client.send(`changedorm${colla}`, {}, JSON.stringify(msg))
-           }
+          if (this.role == 'ROLE_instructor') {
+            //  sendmess(`changedorm${colla}`,'1').then()
+            client.send(`changedorm${colla}`, {}, JSON.stringify(msg))
+          }
         })
       },
 
@@ -266,6 +301,24 @@
       handleCurrentChange(page) {
         this.currentPage = page
         this.timechange()
+      },
+      // 合格已读
+      toallread() {
+        if (this.role == 'ROLE_headmaster') {
+          this.tclass = this.className
+        }
+        // console.log(this.college, this.tclass, this.newrole);
+        allread(this.college, this.tclass, this.newrole).then(res => {
+          // console.log(res);
+          if (res.code == 200) {
+            this.$store.state.count = res.data
+            if (res.data == 0) {
+              this.$store.state.ismess = false
+              this.$store.state.isshowmess = true
+            }
+            this.timechange()
+          }
+        })
       }
     },
   }

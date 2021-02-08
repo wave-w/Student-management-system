@@ -1,23 +1,23 @@
 import {request} from '../request';
-export function getdorm(college,className,isInstructor) {
+export function getdorm(college,className,position) {
     return request({
         url: '/checkdorm',
         method: 'POST',
         params:{
             college,
             className,
-            isInstructor
+            position
         }
     })
 }
-export function findbytime(college,className,isInstructor,check_time,state,isread,currentPage,pageSize) {
+export function findbytime(college,className,position,check_time,state,isread,currentPage,pageSize) {
     return request({
         url: '/findBytime',
         method: 'POST',
         params:{
             college,
             className,
-            isInstructor,
+            position,
             check_time,
             state,
             isread,
@@ -28,14 +28,14 @@ export function findbytime(college,className,isInstructor,check_time,state,isrea
 }
 export function changeread(checkTime,dormNum,feedbackDescribe,
     feedbackPicture,id,readIt,state,stuReadIt,
-    unqualifiedDescribe,unqualifiedPicture,isInstructor){
+    unqualifiedDescribe,unqualifiedPicture,position){
     return request({
         url:'/changeRead',
         method:'POST',
         params:{
             checkTime,dormNum,feedbackDescribe,
     feedbackPicture,id,readIt,state,stuReadIt,
-    unqualifiedDescribe,unqualifiedPicture,isInstructor
+    unqualifiedDescribe,unqualifiedPicture,position
         }
     })
 }
@@ -56,14 +56,26 @@ export function changestate(checkTime,dormNum,feedbackDescribe,
 
 export function changeFkRead(checkTime,dormNum,feedbackDescribe,
     feedbackPicture,id,readIt,state,stuReadIt,
-    unqualifiedDescribe,unqualifiedPicture,isInstructor){
+    unqualifiedDescribe,unqualifiedPicture,position){
     return request({
         url:'/changeFbRead',
         method:'POST',
         params:{
         checkTime,dormNum,feedbackDescribe,
     feedbackPicture,id,readIt,state,stuReadIt,
-    unqualifiedDescribe,unqualifiedPicture,isInstructor
+    unqualifiedDescribe,unqualifiedPicture,position
+        }
+    })
+}
+
+export function allread(college,className,position) {
+    return request({
+        url: '/allRead',
+        method: 'POST',
+        params:{
+            college,
+            className,
+            position
         }
     })
 }

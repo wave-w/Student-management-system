@@ -68,6 +68,7 @@
         </el-image>
       </div>
       <span slot="footer" class="dialog-footer">
+        <el-button type="info" @click="dialogVisible=false">取消</el-button>
         <el-button @click="disagree">不同意</el-button>
         <el-button type="primary" @click="agree">同意</el-button>
       </span>
@@ -76,14 +77,8 @@
 </template>
 
 <script>
-  import {
-    client
-  } from "@/network/config/mqtt";
-  import {
-    changepage,
-    agreeapply,
-    disagreeapply
-  } from '@/network/teacher/apply';
+  import {sendmess,client} from "@/network/config/mqtt";
+  import {changepage,agreeapply,disagreeapply} from '@/network/teacher/apply';
   export default {
     name: '',
     data() {
@@ -102,7 +97,7 @@
         currentPage: 1,
         pagesize: 10,
         total: 0,
-        pagesizes: [0, 6, 10, 20, 30, 40, 50],
+        pagesizes: [5, 10, 20, 30, 40, 50],
       }
     },
     created() {
@@ -111,15 +106,15 @@
       this.newrole = str.replace(reg, "");
       this.pagechange()
     },
-    mounted() {
-      if (this.role == 'ROLE_headmaster') {
-        setTimeout(() => {
-          client.subscribe(`apply1${this.class}`, msg => {
-            this.tableData.push(JSON.parse(msg.body))
-          }, {})
-        }, 10000);
-      }
-    },
+    // mounted() {
+    //   if (this.role == 'ROLE_headmaster') {
+    //     setTimeout(() => {
+    //       client.subscribe(`apply1${this.class}`, msg => {
+    //         this.tableData.push(JSON.parse(msg.body))
+    //       }, {})
+    //     }, 10000);
+    //   }
+    // },
     methods: {
       details(row) {
         this.dialogVisible = true
@@ -141,6 +136,7 @@
           .then(res => {
             if (res.code == 200) {
               if (res.data2.leavedays > 1 || res.data2.whereabouts.substring(0, 3) != '江西省') {
+                //  sendmess(`apply${this.college}`,'1').then()
                 client.send(`apply${this.college}`, {}, 1)
               }
               this.dialogVisible = false

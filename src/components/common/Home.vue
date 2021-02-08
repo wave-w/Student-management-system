@@ -119,8 +119,7 @@
                 setTimeout(() => {
                     let college = window.sessionStorage.getItem('college')
                     let className = window.sessionStorage.getItem('className')
-                    let isInstructor = window.sessionStorage.getItem('isInstructor')
-                    getdorm(college, className, isInstructor).then(res => {
+                    getdorm(college, className, newrole).then(res => {
                         res.data2.forEach(item => {
                             if ((role == 'ROLE_instructor' && item.fdyReadIt == 'unread') ||
                                 (role == 'ROLE_headmaster' && item.readIt == 'unread')) {
@@ -128,8 +127,7 @@
                                 this.$store.state.ismess = true
                                 this.$store.state.isshowmess = false
                             }
-                            if ((role == 'ROLE_instructor' && item.fdyFeedbackReadIt ==
-                                    'unread') ||
+                            if ((role == 'ROLE_instructor' && item.fdyFeedbackReadIt =='unread') ||
                                 (role == 'ROLE_headmaster' && item.feedbackReadIt == 'unread')
                             ) {
                                 this.$store.state.count++

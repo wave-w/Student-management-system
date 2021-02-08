@@ -5,7 +5,7 @@
 </template>
 <script>
   import Home from '@/components/common/Home'
-  import {client} from "@/network/config/mqtt";
+  import {client,sendmess} from "@/network/config/mqtt";
   export default {
     components: {
       Home

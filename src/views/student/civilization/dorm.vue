@@ -87,7 +87,7 @@
 </template>
 
 <script>
-  import {client} from "@/network/config/mqtt";
+  import {sendmess,client} from "@/network/config/mqtt";
   import {getsdorm,checkdorm,feedteacher,changesread,uploadimg} from '@/network/student/dorm';
   export default {
     name: '',
@@ -240,6 +240,7 @@
                 let colla = window.sessionStorage.getItem('collegeAbbreviation')
                 //  this.istread = true
                 //  this.istype = false
+                //  sendmess(`feed${colla}`,'1').then()
                 client.send(`feed${colla}`, {}, 1)
                 //  console.log("send");
                 this.Picturepath = []

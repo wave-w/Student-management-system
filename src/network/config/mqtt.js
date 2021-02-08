@@ -2,6 +2,7 @@ import Stomp from "stompjs";
 //  const MQTT_SERVICE = 'ws://127.0.0.1:15674/ws'  // mqtt服务地址
 //   const MQTT_USERNAME = 'guest' // mqtt连接用户名
 //  const MQTT_PASSWORD = 'guest' // mqtt连接密码
+import { request } from '../request';
 const MQTT_SERVICE = 'ws://111.75.252.147:15674/ws'
 const MQTT_USERNAME = 'admin' // mqtt连接用户名
 const MQTT_PASSWORD = 'admin' // mqtt连接密码
@@ -29,6 +30,16 @@ export function disconnect() {
 	client.disconnect(() => {
 		console.log("连接已断开");
 	}, {})
+}
+
+export function sendmess(queueName,message){
+	return request({
+		url:'/sendMessage',
+		method:'POST',
+		params:{
+			queueName,message
+		}
+	})
 }
 
 // onConnected(frame) {

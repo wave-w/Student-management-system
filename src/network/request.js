@@ -28,8 +28,8 @@ export function request(config) {
             return response.data
         },
         error=>{
-            Message.error("出错啦！！！请重新登录")
-            Router.push('/login')
+            // Message.error("出错啦！！！请重新登录")
+            // Router.push('/login')
             console.log(error);
         })
         return intance(config)

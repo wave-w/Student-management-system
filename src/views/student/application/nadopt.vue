@@ -89,7 +89,7 @@
 <script>
 import {getsinfor} from '@/network/student/sinfor';
 import { getnadoptapply,adoptapply } from '@/network/student/apply';
-import {client} from "@/network/config/mqtt";
+import {sendmess,client} from "@/network/config/mqtt";
 export default {
   name: '',
  data() {
@@ -194,8 +194,10 @@ export default {
             //  console.log(res);
             //  console.log(res.data2.whereabouts.substring(0,3) =='江西省');
              if(res.data2.leavedays<2 && res.data2.whereabouts.substring(0,3) =='江西省'){
+              //  sendmess(`nadopt${this.classs}`,'1').then()
                client.send(`nadopt${this.classs}`, {}, 1)
              }else{
+                // sendmess(`nadopt${this.colla}`,'1').then()
                client.send(`nadopt${this.colla}`, {}, 1)
              }
            }
