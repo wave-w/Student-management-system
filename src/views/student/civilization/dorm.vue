@@ -7,10 +7,20 @@
           </el-option>
         </el-select>
         <el-select v-model="isqualified.value" placeholder="寝室状态" @change="timechange" clearable>
-          <el-option label="合格" value="qualified"></el-option>
-          <el-option label="不合格" value="unqualified"></el-option>
+           <el-option label="优秀" value="优秀"></el-option>
+          <el-option label="良好" value="良好"></el-option>
+          <el-option label="一般" value="一般"></el-option>
+          <el-option label="较差" value="较差"></el-option>
+          <el-option label="脏乱差" value="脏乱差"></el-option>
         </el-select>
-        <el-table :data="sDromData" border class="dromtab" stripe height="400"
+         <!-- <el-select v-model="statenumber" placeholder="次数排序" @change="statenumberchange" clearable style="width:150px">
+          <el-option label="优秀" value="优秀"></el-option>
+          <el-option label="良好" value="良好"></el-option>
+          <el-option label="一般" value="一般"></el-option>
+          <el-option label="较差" value="较差"></el-option>
+          <el-option label="脏乱差" value="脏乱差"></el-option>
+        </el-select> -->
+        <el-table :data="sDromData" border class="dromtab" stripe height="300"
           :default-sort="{prop: 'checkTime', order: 'descending'}">
           <el-table-column prop="dormNum" label="寝室号" align='center'>
           </el-table-column>
@@ -18,7 +28,8 @@
           </el-table-column>
           <el-table-column prop="state" label="状态" align='center'>
             <template slot-scope="scope">
-              <el-tag :type="(scope.row.state=='合格')?s:d">{{scope.row.state}}</el-tag>
+               <el-tag :type="(scope.row.state=='优秀' || scope.row.state=='良好' || scope.row.state=='一般')?s:(scope.row.state=='较差'?w:d)"
+               effect="dark">{{scope.row.state}}</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="feedbackDescribe" label="详情" align='center'>
@@ -69,7 +80,7 @@
       </el-form>
       <!-- 图片上传 -->
       <div class="imgupload">
-        <el-upload action="http://111.75.252.147/score/tupian" list-type="picture-card" ref="imgupload"
+        <el-upload action="https://cxcy.gmu.cn/score/tupian" list-type="picture-card" ref="imgupload"
           :on-success='handleSuccess' :on-preview="handlePictureCardPreview"  multiple
           :with-credentials='true' :limit="3" :on-exceed="handleExceed" class="uploadstyle" :on-error='handleError'>
           <i class="el-icon-plus"></i>
@@ -87,7 +98,7 @@
 </template>
 
 <script>
-  import {sendmess,client} from "@/network/config/mqtt";
+  // import {sendmess,client} from "@/network/config/mqtt";
   import {getsdorm,checkdorm,feedteacher,changesread,uploadimg} from '@/network/student/dorm';
   export default {
     name: '',
@@ -98,9 +109,11 @@
         isqualified: {
           value: ''
         },
+        // statenumber: '',
         sDromData: [],
         s: 'success',
         d: 'danger',
+        w:'warning',
         dialogVisible: false,
         dormtext: '',
         srcList: [],
@@ -150,9 +163,10 @@
     mounted() {
       let sid = window.sessionStorage.getItem('sid')
       getsdorm(sid).then(res => {
+        // console.log(res);
         if (res.code == 200) {
           this.total = res.data2.length
-          this.pagesize = res.data2.length
+          this.pagesize = res.data3
           this.pagesizes[0] = this.pagesize
           // this.sDromData = res.data2
           res.data2.forEach(item => {
@@ -167,6 +181,7 @@
     },
     methods: {
       timechange() {
+        //  this.statenumber = ''
         checkdorm(this.dormid, this.value, this.isqualified.value, this.currentPage, this.pagesize).then(res => {
           this.sDromData = res.data2
           this.total = res.data
@@ -241,7 +256,7 @@
                 //  this.istread = true
                 //  this.istype = false
                 //  sendmess(`feed${colla}`,'1').then()
-                client.send(`feed${colla}`, {}, 1)
+                // client.send(`feed${colla}`, {}, 1)
                 //  console.log("send");
                 this.Picturepath = []
               }
@@ -275,6 +290,10 @@
         this.currentPage = page
         this.timechange()
       },
+      // statenumberchange(){
+      //   this.value = ''
+      //   this.isqualified.value = ''
+      // }
     },
   }
 </script>

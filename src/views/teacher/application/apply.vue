@@ -77,7 +77,7 @@
 </template>
 
 <script>
-  import {sendmess,client} from "@/network/config/mqtt";
+  // import {sendmess,client} from "@/network/config/mqtt";
   import {changepage,agreeapply,disagreeapply} from '@/network/teacher/apply';
   export default {
     name: '',
@@ -137,7 +137,7 @@
             if (res.code == 200) {
               if (res.data2.leavedays > 1 || res.data2.whereabouts.substring(0, 3) != '江西省') {
                 //  sendmess(`apply${this.college}`,'1').then()
-                client.send(`apply${this.college}`, {}, 1)
+                // client.send(`apply${this.college}`, {}, 1)
               }
               this.dialogVisible = false
               this.path = []

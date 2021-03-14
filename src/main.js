@@ -7,6 +7,7 @@ import '@/assets/css/normal.css';
 // 引入·ElementUI
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+import 'element-ui/lib/theme-chalk/index.css';
 import VDistpicker from 'v-distpicker'
 Vue.component('v-distpicker', VDistpicker)
 Vue.use(ElementUI);

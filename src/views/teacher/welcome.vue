@@ -1,9 +1,7 @@
 <template>
   <div>
     <el-card>
-    {{teacherinfo}}
-    {{date}}
-    {{data3}}
+      欢迎您{{teacherinfo.name}}老师
     </el-card>
   </div>
 </template>
@@ -25,7 +23,8 @@ export default {
         this.teacherinfo = res.data
         this.date = res.date
         this.data3 = res.data3
-        window.sessionStorage.setItem('college',res.data.college)
+        // console.log(res);
+        window.sessionStorage.setItem('college',res.data.college)   //
         window.sessionStorage.setItem('collegeAbbreviation',res.data.collegeAbbreviation)
         window.sessionStorage.setItem('className',res.data.className)
         window.sessionStorage.setItem('isInstructor',res.data.isInstructor)

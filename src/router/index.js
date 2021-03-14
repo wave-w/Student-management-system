@@ -39,6 +39,7 @@ import TNadopt from '@/views/teacher/application/nadopt'
 // 三个文明
 import TDorm from '@/views/teacher/civilization/dorm'
 import TClass from '@/views/teacher/civilization/class'
+import Cadres from '@/views/teacher/civilization/cadres';
 
 // 五个一
 import TFiveone from '@/views/teacher/fiveone/index'
@@ -174,6 +175,11 @@ const routes = [{
       path: '/tsclasscivi',
       name: 'TClass',
       component: TClass
+    },
+    {
+      path: '/cadres',
+      name: 'Cadres',
+      component: Cadres
     },
     // 五个一
     {

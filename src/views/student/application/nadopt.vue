@@ -57,7 +57,7 @@
         <el-row>
           <el-col :span="18">
             <div class="imgupload">
-              <el-upload action="http://111.75.252.147/score/tupian" list-type="picture-card" ref="imgupload"
+              <el-upload action="https://cxcy.gmu.cn/score/tupian" list-type="picture-card" ref="imgupload"
                 :on-success='handleSuccess' :on-preview="handlePictureCardPreview" multiple  v-if='!isdisabled'
                 :with-credentials='true' :limit="3" :on-exceed="handleExceed" :on-error='handleError'>
                 <i class="el-icon-plus"></i>
@@ -89,7 +89,7 @@
 <script>
 import {getsinfor} from '@/network/student/sinfor';
 import { getnadoptapply,adoptapply } from '@/network/student/apply';
-import {sendmess,client} from "@/network/config/mqtt";
+// import {sendmess,client} from "@/network/config/mqtt";
 export default {
   name: '',
  data() {
@@ -195,10 +195,10 @@ export default {
             //  console.log(res.data2.whereabouts.substring(0,3) =='江西省');
              if(res.data2.leavedays<2 && res.data2.whereabouts.substring(0,3) =='江西省'){
               //  sendmess(`nadopt${this.classs}`,'1').then()
-               client.send(`nadopt${this.classs}`, {}, 1)
+              //  client.send(`nadopt${this.classs}`, {}, 1)
              }else{
                 // sendmess(`nadopt${this.colla}`,'1').then()
-               client.send(`nadopt${this.colla}`, {}, 1)
+              //  client.send(`nadopt${this.colla}`, {}, 1)
              }
            }
           })

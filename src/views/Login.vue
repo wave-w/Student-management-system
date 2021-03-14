@@ -36,8 +36,8 @@
         data() {
             return {
                 LoginForm: {
-                    username: 'admin',
-                    password: '123456',
+                    username: '',
+                    password: '',
                     code: ''
                 },
                 rememberme: false,
@@ -87,7 +87,7 @@
                                         this.$router.push('/shome')
                                     }
                                     this.$message.success(res.message)
-                                } else this.$message.error("账号或密码错误");
+                                } else this.$message.error("账号或密码错误"); this.random();
                             })
                         } else {
                             this.$message.error("验证码错误")
@@ -115,15 +115,15 @@
     .LoginStyle {
         position: relative;
         width: 100%;
-        min-height: 45rem;
+        min-height: 35rem;
         height: 100vh;
         background-color: #2b4b6b;
     }
 
     .LoginBox {
         position: absolute;
-        top: 14.375rem;
-        left: 34.375rem;
+        top: 12.375rem;
+        left: 30.375rem;
         height: 21.875rem;
         width: 31.25rem;
         background-color: #fff;
@@ -145,8 +145,8 @@
 
     .gnxh {
         position: absolute;
-        top: 10.3125rem;
-        left: 45rem;
+        top: 8.3125rem;
+        left: 41rem;
         height: 9.375rem;
         width: 9.375rem;
         border-radius: 50%;

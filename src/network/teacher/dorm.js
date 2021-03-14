@@ -80,3 +80,23 @@ export function allread(college,className,position) {
     })
 }
 
+export function getstatenumbers(college,className,state,currentPage,pageSize){
+    return request({
+        url:'/getStateAndCount',
+        method:'POST',
+        params:{
+            college,className,state,currentPage,pageSize
+        }
+    })
+}
+
+export function getstatenumdetail(dormNum,state,currentPage,pageSize){
+    return request({
+        url:'/getDetailedMsg',
+        method: 'POST',
+        params:{
+            dormNum,state,currentPage,pageSize
+        }
+    })
+}
+

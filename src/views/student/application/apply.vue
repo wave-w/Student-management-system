@@ -83,7 +83,7 @@
         <el-row>
           <el-col :span="18">
             <div class="imgupload">
-              <el-upload action="http://111.75.252.147/score/tupian" list-type="picture-card" ref="imgupload"
+              <el-upload action="https://cxcy.gmu.cn/score/tupian" list-type="picture-card" ref="imgupload"
                 :on-success='handleSuccess' :on-preview="handlePictureCardPreview" multiple  v-if='!isdisabled'
                 :with-credentials='true' :limit="3" :on-exceed="handleExceed" :on-error='handleError'>
                 <i class="el-icon-plus"></i>
@@ -111,7 +111,7 @@
   </div>
 </template>
 <script>
-  import {sendmess,client} from "@/network/config/mqtt";
+  // import {sendmess,client} from "@/network/config/mqtt";
   import {getsinfor} from '@/network/student/sinfor';
   import VDistpicker from 'v-distpicker'
 import { sendapply,getapply,getnadoptapply } from '@/network/student/apply';
@@ -126,12 +126,12 @@ import { sendapply,getapply,getnadoptapply } from '@/network/student/apply';
           data: [],
           className: '',
           headmaster: '',
-          phone: '123', 
-          headmasterPhone: '234',
+          phone: '', 
+          headmasterPhone: '',
           reason: '',
           leavedays: 0,
-          parentPhone: '123',
-          specificReasons: '123',
+          parentPhone: '',
+          specificReasons: '',
           startdate: '',
           enddate:'',
           whereabouts:'',
@@ -196,7 +196,7 @@ import { sendapply,getapply,getnadoptapply } from '@/network/student/apply';
              if(res.code == 200){
               //  sendmess(`apply${this.classs}`,'hh').then()
               //  sendmess(`apply${this.classs}`,1).then()
-                 client.send(`apply${this.classs}`, {}, 1)
+                //  client.send(`apply${this.classs}`, {}, 1)
                 //  client.send(`apply1${this.classs}`, {}, JSON.stringify(this.applyform))
                   this.isdisabled = true
                   this.applytext = '申请中...'

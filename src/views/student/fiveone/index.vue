@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<el-upload class="upload-demo" drag action="http://111.75.252.147/score/sendFiveOne" with-credentials :limit='1'
+		<el-upload class="upload-demo" drag action="https://cxcy.gmu.cn/score/sendFiveOne" with-credentials :limit='1'
 			:disabled='isupload' :on-error='erroruplaod' :on-progress='progressupload' :on-success='successupload'>
 			<i class="el-icon-upload"></i>
 			<div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-	import {sendmess,client} from "@/network/config/mqtt";
+	// import {sendmess,client} from "@/network/config/mqtt";
 	import {getsinfor} from '@/network/student/sinfor';
 	import {submitfiveone} from '@/network/student/fiveone';
 	export default {

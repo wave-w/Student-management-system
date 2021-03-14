@@ -3,7 +3,7 @@
         <div class="nav_top">
             <img src="~@/assets/images/gmu.png" alt="gmu">
             <div class="btnbox">
-                <i class="el-icon-unlock" @click="cpdialogVisible = true">修改密码</i>
+                <i class="iconfont el-icon-unlock" @click="cpdialogVisible = true">修改密码</i>
                 <a href="#" target="_blank"><i class="iconfont icon-dangjian">党建</i></a>
                 <i class="iconfont icon-tuichu_huaban1" @click="loginout">退出</i>
             </div>
@@ -39,13 +39,16 @@
                 <el-submenu index="3">
                     <template slot="title">
                         <el-badge :is-dot='ismess' style="position: absolute;"></el-badge><i
-                            class="iconfont icon-daifucha"></i>三项文明
+                            class="iconfont icon-daifucha"></i>三个文明
                     </template>
                     <el-menu-item :index="router.civilization.dorm"><i class="iconfont icon-fangjianshu"></i> 寝室文明
                         <el-badge :value="count" :max="99" :hidden='isshowmess'
                             style="position: absolute; right: .625rem;"></el-badge>
                     </el-menu-item>
                     <el-menu-item :index="router.civilization.class"><i class="iconfont icon-kecheng"></i>课堂文明
+                    </el-menu-item>
+                     <el-menu-item :index="router.civilization.cadres" v-if="ishowcadres"
+                     ><i class="iconfont icon-kecheng"></i>学生干部
                     </el-menu-item>
                 </el-submenu>
                 <el-menu-item :index="router.fiveone"><i class="iconfont icon-zuoye"></i>五个一</el-menu-item>
@@ -109,6 +112,12 @@
                     return {}
                 }
             },
+            ishowcadres: {
+                type: Boolean,
+                default () {
+                    return false
+                }
+            },
         },
         created() {
             let role = window.sessionStorage.getItem('role')
@@ -119,6 +128,7 @@
                 setTimeout(() => {
                     let college = window.sessionStorage.getItem('college')
                     let className = window.sessionStorage.getItem('className')
+                    // console.log(college,className);
                     getdorm(college, className, newrole).then(res => {
                         res.data2.forEach(item => {
                             if ((role == 'ROLE_instructor' && item.fdyReadIt == 'unread') ||
@@ -293,6 +303,12 @@
 </script>
 
 <style scoped>
+.mainhome{
+    height: 100vh;
+    min-height: 600px;
+    overflow:hidden;
+    /* background-color: red; */
+}
     .nav_top {
         min-height: 8.75rem;
         height: 18vh;
@@ -343,7 +359,8 @@
     .main {
         height: 36.3125rem;
         width: 70rem;
-        margin-left: 21.875rem;
+        /* background-color: red; */
+        margin-left: 15.875rem;
 
     }
 </style>

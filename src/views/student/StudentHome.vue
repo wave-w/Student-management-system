@@ -1,11 +1,11 @@
 <template>
   <div>
-    <home :router='routers'></home>
+    <home :router='routers' :ishowcadres='false'></home>
   </div>
 </template>
 <script>
   import Home from '@/components/common/Home'
-  import {client,sendmess} from "@/network/config/mqtt";
+  // import {client,sendmess} from "@/network/config/mqtt";
   export default {
     components: {
       Home
@@ -41,27 +41,27 @@
         this.sdormnum = window.sessionStorage.getItem('sdormnum')
       }, 1000);
     },
-    mounted() {
-      setTimeout(() => {
-        // 新的查寝信息提示
-        this.sdormnum=this.sdormnum.replace("-","")
-        client.subscribe(this.sdormnum, msg => {
-            this.$store.state.count++
-            this.$store.state.ismess = true
-            this.$store.state.isshowmess = false
-            this.$message("有新的查寝消息,刷新以查看")
-        }, {})
-        // 反馈消息老师回复提示
-        client.subscribe(`dorm${this.sdormnum}`, msg => {
-          // console.log(msg.body);
-          this.$message("反馈消息老师有新的回馈")
-        }, {})
-        // `changedorm${colla}`
-          client.subscribe(`changedorm${this.sdormnum}`, msg => {
-          this.$message("老师已查看你的反馈消息")
-        }, {})
-      }, 2000);
-    },
+    // mounted() {
+      // setTimeout(() => {
+      //   // 新的查寝信息提示
+      //   this.sdormnum=this.sdormnum.replace("-","")
+      //   client.subscribe(this.sdormnum, msg => {
+      //       this.$store.state.count++
+      //       this.$store.state.ismess = true
+      //       this.$store.state.isshowmess = false
+      //       this.$message("有新的查寝消息,刷新以查看")
+      //   }, {})
+      //   // 反馈消息老师回复提示
+      //   client.subscribe(`dorm${this.sdormnum}`, msg => {
+      //     // console.log(msg.body);
+      //     this.$message("反馈消息老师有新的回馈")
+      //   }, {})
+      //   // `changedorm${colla}`
+      //     client.subscribe(`changedorm${this.sdormnum}`, msg => {
+      //     this.$message("老师已查看你的反馈消息")
+      //   }, {})
+      // }, 2000);
+    // },
   }
 </script>
 
