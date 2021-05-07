@@ -402,7 +402,8 @@
           // console.log(res);
           if (res.code == 200) {
             console.log(res);
-            this.$store.state.count = res.data
+            this.$store.state.count = res.datagit add .
+            
             if (res.data == 0) {
               this.$store.state.ismess = false
               this.$store.state.isshowmess = true
