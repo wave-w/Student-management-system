@@ -97,7 +97,7 @@
       <el-input type="textarea" autosize placeholder="暂无消息" v-model="dormtext" disabled style="margin-top: .625rem;">
       </el-input>
       <div class="dorming" v-for="(item,index) in path" :key='index'>
-        <el-image style="width: 120px; height: 120px" :src="item" :preview-src-list="path">
+        <el-image style="width: 120px; height: 120px;" @click="dialogVisible=false"  :src="item" :preview-src-list="path">
           <div slot="placeholder">
             加载中<span class="dot">...</span>
           </div>
@@ -264,13 +264,23 @@
       details(index, row) {
         if (this.showtables) {
           this.dialogVisible = true
-          this.dormtext = row.qualifiedDescribe
           this.showt = true
-          if (row.qualifiedPicture == '' || row.qualifiedPicture == null || row.qualifiedPicture == "null") {
+           if(row.state == "优秀" || row.state == "良好" || row.state == "合格"){
+              this.dormtext = row.qualifiedDescribe
+               if (row.qualifiedPicture == '' || row.qualifiedPicture == null || row.qualifiedPicture == "null") {
             this.path = []
           } else {
             this.path = row.qualifiedPicture.split(',')
           }
+           }else{
+               this.dormtext = row.unqualifiedDescribe
+               if (row.unqualifiedPicture == '' || row.unqualifiedPicture == null || row.unqualifiedPicture == "null") {
+            this.path = []
+          } else {
+            this.path = row.unqualifiedPicture.split(',')
+          }
+           }
+         
           this.checkerman = row.checker
           changeread(row.checkTime, row.dormNum, row.feedbackDescribe,
             row.feedbackPicture, row.id, row.readIt, row.state, row.stuReadIt,
@@ -353,6 +363,7 @@
           this.suredialogVisible = false
           this.dialogVisible = false
           this.$message.success("更改合格成功")
+          this.timechange()
           // sendmess(`dorm${this.fdormNum}`,'1').then()
           // client.send(`dorm${this.fdormNum}`, {}, 1)
           // let num = this.feedbackdorm
@@ -390,6 +401,7 @@
         allread(this.college, this.tclass, this.newrole).then(res => {
           // console.log(res);
           if (res.code == 200) {
+            console.log(res);
             this.$store.state.count = res.data
             if (res.data == 0) {
               this.$store.state.ismess = false

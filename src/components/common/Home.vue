@@ -47,8 +47,8 @@
                     </el-menu-item>
                     <el-menu-item :index="router.civilization.class"><i class="iconfont icon-kecheng"></i>课堂文明
                     </el-menu-item>
-                     <el-menu-item :index="router.civilization.cadres" v-if="ishowcadres"
-                     ><i class="iconfont icon-kecheng"></i>学生干部
+                    <el-menu-item :index="router.civilization.cadres" v-if="ishowcadres"><i
+                            class="iconfont icon-kecheng"></i>学生干部
                     </el-menu-item>
                 </el-submenu>
                 <el-menu-item :index="router.fiveone"><i class="iconfont icon-zuoye"></i>五个一</el-menu-item>
@@ -137,7 +137,8 @@
                                 this.$store.state.ismess = true
                                 this.$store.state.isshowmess = false
                             }
-                            if ((role == 'ROLE_instructor' && item.fdyFeedbackReadIt =='unread') ||
+                            if ((role == 'ROLE_instructor' && item.fdyFeedbackReadIt ==
+                                    'unread') ||
                                 (role == 'ROLE_headmaster' && item.feedbackReadIt == 'unread')
                             ) {
                                 this.$store.state.count++
@@ -160,7 +161,7 @@
                             if (this.$store.state.applycount == 0) {
                                 this.$store.state.applyisshowmess = true
                             }
-                             if (this.$store.state.applycount == 0 && this.$store.state.nadoptcount == 0) {
+                            if (this.$store.state.applycount == 0 && this.$store.state.nadoptcount == 0) {
                                 this.$store.state.applyismess = false
                             }
                         });
@@ -278,7 +279,10 @@
                     this.$message.success('退出登录')
                 })
                 window.sessionStorage.clear()
+                window.sessionStorage.clear()
                 this.$router.replace('/login')
+                window.location.reload()
+
             },
             commitpassword() {
                 this.$refs.cpformref.validate(validate => {
@@ -303,12 +307,13 @@
 </script>
 
 <style scoped>
-.mainhome{
-    height: 100vh;
-    min-height: 600px;
-    overflow:hidden;
-    /* background-color: red; */
-}
+    .mainhome {
+        height: 100vh;
+        min-height: 600px;
+        overflow: hidden;
+        /* background-color: red; */
+    }
+
     .nav_top {
         min-height: 8.75rem;
         height: 18vh;

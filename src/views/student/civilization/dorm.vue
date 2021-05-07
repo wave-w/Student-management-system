@@ -56,7 +56,7 @@
     <el-dialog title="寝室详情" :visible="dialogVisible" width="30%" :show-close='false'>
       <el-input type="textarea" autosize placeholder="暂无信息" v-model="dormtext" disabled></el-input>
       <div class="dorming" v-for="(item,index) in srcList" :key="index">
-        <el-image style="width: 7.5rem; height: 7.5rem" :src="item" :preview-src-list="srcList">
+        <el-image style="width: 7.5rem; height: 7.5rem;"  @click="dialogVisible=false"  :src="item" :preview-src-list="srcList">
           <div slot="placeholder">
             加载中<span class="dot">...</span>
           </div>
@@ -99,7 +99,7 @@
 
 <script>
   // import {sendmess,client} from "@/network/config/mqtt";
-  import {getsdorm,checkdorm,feedteacher,changesread,uploadimg} from '@/network/student/dorm';
+  import {getsdorm,checkdorm,feedteacher,changesread} from '@/network/student/dorm';
   export default {
     name: '',
     data() {
@@ -174,6 +174,7 @@
           });
           this.datatime = res.data
           this.dormid = res.data2[0].dormNum
+          this.timechange()
         } else {
           this.$message.error("登陆失效,请重新登陆")
         }
@@ -190,15 +191,25 @@
       details(index, row) {
         let feeddays = ((new Date(new Date().toLocaleDateString()).getTime()) -
           (new Date(new Date(row.checkTime).toLocaleDateString()).getTime())) / 86400000; // 当天0点
-        if (feeddays >= 3) {
+        if (feeddays >= 7) {
           this.isovertime = true
           this.overtime = '反馈期限已过'
         }
+        // console.log(feeddays);
+        if(row.state == "优秀" || row.state == "良好" || row.state == "合格"){
         this.dormtext = row.qualifiedDescribe
-        if (row.qualifiedPicture == '' || row.qualifiedPicture == null) {
+         if (row.qualifiedPicture == '' || row.qualifiedPicture == null) {
           this.srcList = []
         } else {
           this.srcList = row.qualifiedPicture.split(',')
+        }
+        }else{
+          this.dormtext = row.unqualifiedDescribe
+           if (row.unqualifiedPicture == '' || row.unqualifiedPicture == null) {
+          this.srcList = []
+        } else {
+          this.srcList = row.unqualifiedPicture.split(',')
+        }
         }
         this.Dormrow = row
         changesread(row.checkTime, row.dormNum, row.feedbackDescribe,

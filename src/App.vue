@@ -33,6 +33,8 @@
     },
 destroyed() {
   logout().then()
+  window.sessionStorage.clear()
+  window.location.reload()
 },
   }
 </script>

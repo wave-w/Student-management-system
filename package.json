@@ -9,7 +9,7 @@
   "dependencies": {
     "axios": "^0.21.0",
     "core-js": "^3.6.5",
-    "element-ui": "^2.14.1",
+    "element-ui": "^2.15.1",
     "stompjs": "^2.3.3",
     "v-distpicker": "^1.2.9",
     "vue": "^2.6.11",
