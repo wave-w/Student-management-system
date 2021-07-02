@@ -76,6 +76,7 @@
                     if (val) {
                         if (this.LoginForm.code == this.stringcode) {
                             window.sessionStorage.setItem('sid', this.LoginForm.username)
+                            
                             let mobile = this.LoginForm.username
                             let password = this.LoginForm.password
                             Login(mobile, password, this.rememberme).then(res => {

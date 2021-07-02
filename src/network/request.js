@@ -1,10 +1,8 @@
 import axios from 'axios'
 import Router from '@/router/index' 
-import { ColorPicker, Message } from 'element-ui';
+import { Message } from 'element-ui';
 export function request(config) {
     const intance = axios.create({
-        // baseURL: 'http://111.75.252.147/score',
-        // baseURL:'http://119.23.53.78:8888/api/private/v1',
         baseURL:'https://cxcy.gmu.cn/score',
         withCredentials:true,
         timeout: 10000
