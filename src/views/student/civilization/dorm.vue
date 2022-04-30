@@ -165,6 +165,9 @@
       getsdorm(sid).then(res => {
         // console.log(res);
         if (res.code == 200) {
+          if(!res.data2.length){
+            return
+          }
           this.total = res.data2.length
           this.pagesize = res.data3
           this.pagesizes[0] = this.pagesize
